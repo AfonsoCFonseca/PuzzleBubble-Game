@@ -1,3 +1,9 @@
+export const ARROW_IMAGE = { 
+    WIDTH: 32,
+    HEIGHT: 800,
+    INITIAL_ANGLE: -110,
+}
+
 export const BACKGROUND = {
     WIDTH: 1250,
     HEIGHT: 1720

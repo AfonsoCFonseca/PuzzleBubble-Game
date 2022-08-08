@@ -1,6 +1,6 @@
 import { RAY_SPEED } from "../Utils/gameValues";
-import GameManager from "./GameManager";
-import { makeAnimation } from '../Utils/utils';
+import GameManager, { gameManager } from "./GameManager";
+import { aimArrow } from "../Scenes/GameScene";
 import Piece from "./Piece";
 
 export default class Player {
@@ -19,6 +19,14 @@ export default class Player {
         return this.currentPiece;
     }
 
+    public setCurrentPiece(piece: Piece) {
+        this.currentPiece = piece;
+    }
+
+    public getAimLine(): Phaser.Geom.Line {
+        return this.aimLine;
+    }
+
     public setSecondaryAimLine(line: Phaser.Geom.Line, index) {
         this.secondaryAimLine[index] = line;
     }
@@ -34,16 +42,28 @@ export default class Player {
     public move(side) {
         if (side === 'left') {
             if(this.aimLine.getPointB().y < this.aimLine.getPointA().y) {
+                aimArrow.rotation += -RAY_SPEED;
                 Phaser.Geom.Line.RotateAroundPoint(this.aimLine, this.aimLine.getPointA(), -RAY_SPEED);
             }
         } else {
+            aimArrow.rotation += RAY_SPEED;
             Phaser.Geom.Line.RotateAroundPoint(this.aimLine, this.aimLine.getPointA(), RAY_SPEED);
         }
     }
 
     public shootPiece() {
-        this.currentPiece.shoot(this.aimLine, this.getSecondaryAimLines() , () => {
-
+        this.currentPiece.shoot(this.getSecondaryAimLines() , () => {
+            this.erasePiece();
+            this.generatePiece();
         })
+    }
+
+    private erasePiece() {
+        this.currentPiece = null;
+    }
+
+    private generatePiece() {
+        const newPiece = new Piece();
+        this.setCurrentPiece(newPiece);
     }
 }

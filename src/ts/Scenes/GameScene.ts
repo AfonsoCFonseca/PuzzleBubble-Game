@@ -3,7 +3,7 @@ import GameManager from '../Game/GameManager';
 import Player from '../Game/Player'
 import Piece from '../Game/Piece'
 
-import { BACKGROUND, HALF_SCREEN, TILE, WALL } from '../Utils/gameValues';
+import { ARROW_IMAGE, BACKGROUND, HALF_SCREEN, TILE, WALL } from '../Utils/gameValues';
 
 export let gameScene: Phaser.Scene;
 
@@ -11,6 +11,8 @@ export let player: Player;
 export let gameManager: GameManager;
 
 export let wallGroup: Phaser.GameObjects.Group;
+
+export let aimArrow: Phaser.GameObjects.Image;
 
 export default class GameScene extends Phaser.Scene {
 
@@ -26,6 +28,7 @@ export default class GameScene extends Phaser.Scene {
 
         this.load.image('frame', 'assets/frame.png');
         this.load.image('background', 'assets/background.png');
+        this.load.image('aimArrow', 'assets/longarrow-black.png');
 
         this.load.spritesheet('bubble_1', 'assets/bubble_1.png', {
             frameWidth: TILE.WIDTH,
@@ -52,12 +55,17 @@ export default class GameScene extends Phaser.Scene {
 
     private createFrameAndWalls() {
         this.add.image(0, 0, 'background').setOrigin(0, 0);
-        var randomColor = "0x" + Math.floor(Math.random()*16777215).toString(16);
-        this.add.rectangle(0, 0, BACKGROUND.WIDTH, BACKGROUND.HEIGHT, parseInt(randomColor), 0.3).setOrigin(0,0);;
+        aimArrow = this.add.image(HALF_SCREEN.WIDTH - ARROW_IMAGE.WIDTH/2,
+            BACKGROUND.HEIGHT - 100, 'aimArrow').setOrigin(0, 0);
+        aimArrow.angle = ARROW_IMAGE.INITIAL_ANGLE;
+        let randomColor = "0x" + Math.floor(Math.random()*16777215).toString(16);
+        this.add.rectangle(0, 0, BACKGROUND.WIDTH, BACKGROUND.HEIGHT, 
+            parseInt(randomColor), 0.3).setOrigin(0,0);;
         this.add.image(0, 0, 'frame').setOrigin(0, 0);
         this.leftWall = this.add.rectangle(0, 0, WALL.WIDTH, BACKGROUND.HEIGHT).setOrigin(0,0);
         gameScene.physics.add.existing(this.leftWall);
-        this.rightWall = this.add.rectangle(BACKGROUND.WIDTH - WALL.WIDTH, 0, WALL.WIDTH, BACKGROUND.HEIGHT).setOrigin(0,0);
+        this.rightWall = this.add.rectangle(BACKGROUND.WIDTH - WALL.WIDTH, 0, 
+            WALL.WIDTH, BACKGROUND.HEIGHT).setOrigin(0,0);
         gameScene.physics.add.existing(this.rightWall);
 
         wallGroup.addMultiple([this.leftWall, this.rightWall]);
