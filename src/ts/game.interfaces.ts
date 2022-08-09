@@ -5,12 +5,6 @@ export interface Position {
     y: number
 }
 
-export enum SIDE {
-    LEFT_TO_RIGHT,
-    RIGHT_TO_LEFT,
-    MAIN
-}
-
 export enum SIDES {
     LEFT,
     RIGHT

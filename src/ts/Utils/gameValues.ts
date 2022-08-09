@@ -19,7 +19,7 @@ export const WALL =  {
     HEIGHT: BACKGROUND.HEIGHT
 }
 
-export const TILE = {
+export const PIECE = {
     WIDTH: 112,
     HEIGHT: 111
 }
@@ -30,7 +30,8 @@ export const PLAYER_POS = {
 }
 
 export const RAY_SPEED = 0.04;
-export const BALL_SPEED = 300;
+export const BALL_SPEED = 200;
+export const AVERAGE_LINE_SIZE = HALF_SCREEN.WIDTH;
 
 export const RED_COLOR = 0xFF0000;
 export const GREEN_COLOR = 0x00aa00;

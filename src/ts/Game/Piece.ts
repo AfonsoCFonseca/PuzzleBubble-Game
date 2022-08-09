@@ -1,7 +1,7 @@
 import { Position } from "../game.interfaces";
 import { gameScene, wallGroup, player } from "../Scenes/GameScene"
-import { BACKGROUND, BALL_SPEED, HALF_SCREEN } from "../Utils/gameValues";
-import { makeAnimation } from "../Utils/utils";
+import { AVERAGE_LINE_SIZE, BACKGROUND, BALL_SPEED, HALF_SCREEN, PIECE } from "../Utils/gameValues";
+import { applyPythagoreanTheorem, makeAnimation } from "../Utils/utils";
 
 export default class Piece extends Phaser.GameObjects.Sprite {
 
@@ -18,16 +18,21 @@ export default class Piece extends Phaser.GameObjects.Sprite {
         callback?: Function) {
         this.shootingCallback = callback;
         const destinyPoint = secondAimLines[0]?.getPointA() || player.getAimLine().getPointB();
-        this.move(destinyPoint, 0, BALL_SPEED / 2);
+        const animSpeed = this.calculateSpeedToDistance(destinyPoint);
+        this.move(destinyPoint, 0, animSpeed);
 
     }
 
-    private move( {x, y}, nextPos, speed) {
-        makeAnimation(this, { x, y }, speed, () => {
+    private move( {x, y}, nextPos, animSpeed) {
+
+        const xWithMargin = x + (this.x > x ? PIECE.WIDTH/2 : -PIECE.WIDTH/2);
+
+        makeAnimation(this, { x: xWithMargin, y }, animSpeed, () => {
             const nextLine = player.getSecondaryAimLines()[nextPos];
             if(nextLine) {
                 nextPos++
-                this.move(nextLine.getPointB(), nextPos, BALL_SPEED)
+                const animSpeed = this.calculateSpeedToDistance(nextLine.getPointB());
+                this.move(nextLine.getPointB(), nextPos, animSpeed)
             } else {
                 this.shootingCallback();
                 this.deletePiece()
@@ -36,7 +41,13 @@ export default class Piece extends Phaser.GameObjects.Sprite {
     }
 
     private deletePiece() {
-        console.log("destroyed")
         this.destroy();
+    }
+    
+    private calculateSpeedToDistance({ x,y }: { x:number , y: number }):number {
+        let finalX = this.x - x
+        let finalY = this.y - y
+        let lineDistance = applyPythagoreanTheorem(finalX, finalY);
+        return (BALL_SPEED * lineDistance) / AVERAGE_LINE_SIZE
     }
 }

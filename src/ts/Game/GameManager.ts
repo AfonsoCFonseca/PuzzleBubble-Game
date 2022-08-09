@@ -1,6 +1,6 @@
 export let gameManager: GameManager
 
-import { SIDE, SIDES } from '../game.interfaces';
+import { SIDES } from '../game.interfaces';
 import { player } from '../Scenes/GameScene';
 
 import { BACKGROUND, GREEN_COLOR, HALF_SCREEN, RED_COLOR, WALL } from '../Utils/gameValues';

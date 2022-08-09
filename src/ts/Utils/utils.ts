@@ -1,4 +1,4 @@
-import { SIDE, SIDES } from '../game.interfaces';
+import { SIDES } from '../game.interfaces';
 import { myGraphics } from '../Game/GameManager';
 import { gameScene } from '../Scenes/GameScene';
 import { BACKGROUND, PLAYER_POS, RED_COLOR, WALL } from './gameValues';
@@ -51,4 +51,11 @@ export const drawLine = (currentPoint, secondaryLinePointB_X, secondaryLinePoint
     myGraphics.lineStyle(3, RED_COLOR);
     myGraphics.strokeLineShape(line);
     return line;
+}
+
+export const applyPythagoreanTheorem = (x:number , y: number): number => {
+    x *= x
+    y *= y
+    let lineDistance = x + y
+    return Math.sqrt(lineDistance )
 }

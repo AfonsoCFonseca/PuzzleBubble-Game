@@ -3,7 +3,7 @@ import GameManager from '../Game/GameManager';
 import Player from '../Game/Player'
 import Piece from '../Game/Piece'
 
-import { ARROW_IMAGE, BACKGROUND, HALF_SCREEN, TILE, WALL } from '../Utils/gameValues';
+import { ARROW_IMAGE, BACKGROUND, HALF_SCREEN, PIECE, WALL } from '../Utils/gameValues';
 
 export let gameScene: Phaser.Scene;
 
@@ -31,8 +31,8 @@ export default class GameScene extends Phaser.Scene {
         this.load.image('aimArrow', 'assets/longarrow-black.png');
 
         this.load.spritesheet('bubble_1', 'assets/bubble_1.png', {
-            frameWidth: TILE.WIDTH,
-            frameHeight: TILE.HEIGHT
+            frameWidth: PIECE.WIDTH,
+            frameHeight: PIECE.HEIGHT
         });
 
         wallGroup = this.add.group();
