@@ -26,10 +26,12 @@ Only when I reach that goal I had officialized the development of the game and p
 
 After I started by focusing on the shooting piece, its moving animation, its deletion when reaching out of screen coords and the generation of a new one. The calculation of the speed of movement changes depending on the trajectory the ball has to travel, with that in mind, I applied the Pythagorean theorem to the subtraction of the destiny and origin point of both axis, having that I just had to multiply its value by itself and add both together and finally finding out the square root to that value. Having that result I just applied the rule of three with constants speeds and average line width to find out the final speed for dynamic lines
 
+Created a menu scene and the logic between scene transistion. After, added the game over menu and applied the game over, start and reset game functions
+
 ---------------------------------------------------------------
 # Sketches & Evolution
 
  <p float="left">
-   <img width="235" height="255" src='https://github.com/AfonsoCFonseca/PuzzleBubble-Game/blob/main/screenshots/05_08_22.png' >
-   <img width="235" height="255" src='https://github.com/AfonsoCFonseca/PuzzleBubble-Game/blob/main/screenshots/09_08_22.png' >
+   <img width="200" height="255" src='https://github.com/AfonsoCFonseca/PuzzleBubble-Game/blob/main/screenshots/05_08_22.png' >
+   <img width="200" height="255" src='https://github.com/AfonsoCFonseca/PuzzleBubble-Game/blob/main/screenshots/09_08_22.png' >
  </p>

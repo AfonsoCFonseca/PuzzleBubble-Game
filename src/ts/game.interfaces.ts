@@ -9,3 +9,8 @@ export enum SIDES {
     LEFT,
     RIGHT
 }
+
+export enum GAME_STATE {
+    RUNNING,
+    PAUSE
+}

@@ -14,6 +14,11 @@ export const HALF_SCREEN = {
     HEIGHT: BACKGROUND.HEIGHT / 2
 };
 
+export const GAMEOVER_BOARD = {
+    WIDTH: BACKGROUND.WIDTH / 1.5,
+    HEIGHT: BACKGROUND.HEIGHT / 3
+};
+
 export const WALL =  {
     WIDTH: 40,
     HEIGHT: BACKGROUND.HEIGHT

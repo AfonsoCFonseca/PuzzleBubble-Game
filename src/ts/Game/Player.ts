@@ -40,7 +40,7 @@ export default class Player {
     }
 
     public move(side) {
-        if (side === 'left') {
+        if (side === 'left') { 
             if(this.aimLine.getPointB().y < this.aimLine.getPointA().y) {
                 aimArrow.rotation += -RAY_SPEED;
                 Phaser.Geom.Line.RotateAroundPoint(this.aimLine, this.aimLine.getPointA(), -RAY_SPEED);

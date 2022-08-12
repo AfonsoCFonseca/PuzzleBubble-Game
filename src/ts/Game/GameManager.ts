@@ -1,17 +1,20 @@
 export let gameManager: GameManager
 
-import { SIDES } from '../game.interfaces';
-import { player } from '../Scenes/GameScene';
+import { GAME_STATE, SIDES } from '../game.interfaces';
+import GameScene, { player } from '../Scenes/GameScene';
 
 import { BACKGROUND, GREEN_COLOR, HALF_SCREEN, RED_COLOR, WALL } from '../Utils/gameValues';
 import { drawLine, getPointFromWall, isOriginalPoint } from '../Utils/utils';
 
 export let myGraphics;
+
+export let initialAimLineAngle;
 export default class GameManager {
 
     private leftWall: Phaser.Geom.Rectangle;
     private rightWall: Phaser.Geom.Rectangle;
     public aimLine: Phaser.Geom.Line;
+    public currentGameState: GAME_STATE;
 
     constructor(graphics) {
         gameManager = this;
@@ -20,16 +23,35 @@ export default class GameManager {
     }
 
     private start() {
+        this.currentGameState = GAME_STATE.RUNNING;
         this.createGeoms();
     }
 
     public update() {
         myGraphics.clear();
-        this.renderGeoms();
+        if (this.currentGameState === GAME_STATE.RUNNING) {
+            this.renderGeoms();
+        }
+    }
+
+    public getCurrentGameState(): GAME_STATE {
+        return this.currentGameState
+    }
+
+    public setCurrentGameState(current: GAME_STATE) {
+        this.currentGameState = current;
     }
 
     public getAimLine() {
         return this.aimLine;
+    }
+
+    public resetAimLine() {
+        // this.aimLine = new Phaser.Geom.Line(HALF_SCREEN.WIDTH,BACKGROUND.HEIGHT - 100, WALL.WIDTH, 0);
+        this.aimLine.x1 = HALF_SCREEN.WIDTH
+        this.aimLine.y1 = BACKGROUND.HEIGHT - 100
+        this.aimLine.x2 = WALL.WIDTH
+        this.aimLine.y2 = 0
     }
 
     private createGeoms() {
