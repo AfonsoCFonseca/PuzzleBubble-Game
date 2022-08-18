@@ -8,6 +8,7 @@ export default class Player {
     private aimLine: Phaser.Geom.Line;
     private secondaryAimLine: Phaser.Geom.Line[] = [];
     private currentPiece: Piece = null;
+    private isShooting = false;
 
     constructor(gameManager: GameManager) {
         this.aimLine = gameManager.getAimLine();
@@ -52,10 +53,14 @@ export default class Player {
     }
 
     public shootPiece() {
-        this.currentPiece.shoot(this.getSecondaryAimLines() , () => {
-            this.erasePiece();
-            this.generatePiece();
-        })
+        if (this.isShooting === false) {
+            this.currentPiece.shoot(this.getSecondaryAimLines() , () => {
+                this.erasePiece();
+                this.generatePiece();
+                this.isShooting = false;
+            })
+            this.isShooting = true;
+        }
     }
 
     private erasePiece() {

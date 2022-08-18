@@ -25,9 +25,8 @@ export default class Piece extends Phaser.GameObjects.Sprite {
 
     private move( {x, y}, nextPos, animSpeed) {
 
-        const xWithMargin = x + (this.x > x ? PIECE.WIDTH/2 : -PIECE.WIDTH/2);
-
-        makeAnimation(this, { x: xWithMargin, y }, animSpeed, () => {
+        // const xWithMargin = x + (this.x > x ? PIECE.WIDTH/2 : -PIECE.WIDTH/2);
+        makeAnimation(this, { x, y }, animSpeed, () => {
             const nextLine = player.getSecondaryAimLines()[nextPos];
             if(nextLine) {
                 nextPos++

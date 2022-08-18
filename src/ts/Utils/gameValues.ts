@@ -1,7 +1,7 @@
 export const ARROW_IMAGE = { 
     WIDTH: 32,
     HEIGHT: 800,
-    INITIAL_ANGLE: -110,
+    INITIAL_ANGLE: -108.5,
 }
 
 export const BACKGROUND = {
@@ -20,7 +20,7 @@ export const GAMEOVER_BOARD = {
 };
 
 export const WALL =  {
-    WIDTH: 40,
+    WIDTH: 90,
     HEIGHT: BACKGROUND.HEIGHT
 }
 
