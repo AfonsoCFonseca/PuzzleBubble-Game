@@ -18,7 +18,7 @@ export const config = {
             // debug: true
         }
     },
-    scene: [MenuScene, GameScene]
+    scene: [GameScene, MenuScene]
 };
 
 export const game = new Phaser.Game(config);

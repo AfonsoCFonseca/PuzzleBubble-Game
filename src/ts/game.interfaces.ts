@@ -5,7 +5,7 @@ export interface Position {
     y: number
 }
 
-export enum SIDES {
+export enum SIDE {
     LEFT,
     RIGHT
 }
@@ -13,4 +13,14 @@ export enum SIDES {
 export enum GAME_STATE {
     RUNNING,
     PAUSE
+}
+
+export enum BALL_TYPES {
+    DARK_ORANGE,
+    RED,
+    GREEN,
+    BLACK,
+    BLUE,
+    ORANGE,
+    PINK
 }

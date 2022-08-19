@@ -4,17 +4,21 @@ import Player from '../Game/Player'
 import Piece from '../Game/Piece'
 
 import { ARROW_IMAGE, BACKGROUND, GAMEOVER_BOARD, HALF_SCREEN, PIECE, WALL } from '../Utils/gameValues';
-import { GAME_STATE } from '../game.interfaces';
+import { GAME_STATE, SIDE } from '../game.interfaces';
+import Grid from '../Game/Grid';
 
 export let gameScene: Phaser.Scene;
 
 export let player: Player;
+export let grid: Grid;
 export let gameManager: GameManager;
 
 export let wallGroup: Phaser.GameObjects.Group;
 export let gameOverGroup: Phaser.GameObjects.Group;
 
 export let aimArrow: Phaser.GameObjects.Image;
+
+let keys;
 
 export default class GameScene extends Phaser.Scene {
 
@@ -39,7 +43,7 @@ export default class GameScene extends Phaser.Scene {
         this.load.image('buttonReset', 'assets/buttonReset.png')
         this.load.image('buttonMenu', 'assets/buttonMenu.png')
 
-        this.load.spritesheet('bubble_1', 'assets/bubble_1.png', {
+        this.load.spritesheet('bubbles', 'assets/bubbles.png', {
             frameWidth: PIECE.WIDTH,
             frameHeight: PIECE.HEIGHT
         });
@@ -49,11 +53,16 @@ export default class GameScene extends Phaser.Scene {
     }
 
     create() {
+        keys = this.input.keyboard.addKeys({
+            left: 'Q',
+            right: 'E'
+        });
         this.startGame();
     }
 
     update() {
         gameManager.update();
+        this.setKeys()
     }
 
     private startGame() {
@@ -62,18 +71,14 @@ export default class GameScene extends Phaser.Scene {
         this.createFrameAndWalls();
 
         gameManager = new GameManager(graphics);
+        grid = new Grid();
         player = new Player(gameManager);
-
-        this.setKeys();
-
-        // setTimeout( () => this.gameOver(), 2000)
     }
 
     private resetGame() {
         myGraphics.clear();
         aimArrow.angle = ARROW_IMAGE.INITIAL_ANGLE;
         gameOverGroup.clear(true, true);
-        this.setKeys();
         gameManager.resetAimLine()
         gameManager.setCurrentGameState(GAME_STATE.RUNNING);
     }
@@ -102,8 +107,8 @@ export default class GameScene extends Phaser.Scene {
         this.add.image(0, 0, 'background').setOrigin(0, 0);
         this.add.rectangle(0, 0, BACKGROUND.WIDTH, BACKGROUND.HEIGHT, 
             parseInt(this.bgColor), 0.3).setOrigin(0,0);
-        aimArrow = this.add.image(HALF_SCREEN.WIDTH - ARROW_IMAGE.WIDTH/2,
-            BACKGROUND.HEIGHT - 100, 'aimArrow').setOrigin(0, 0);
+        aimArrow = this.add.image(HALF_SCREEN.WIDTH,
+            BACKGROUND.HEIGHT - 100, 'aimArrow').setOrigin(0, 0.5);
         aimArrow.angle = ARROW_IMAGE.INITIAL_ANGLE;
         this.add.image(0, 0, 'frame').setOrigin(0, 0);
         this.leftWall = this.add.rectangle(0, 0, WALL.WIDTH, BACKGROUND.HEIGHT).setOrigin(0,0);
@@ -117,8 +122,12 @@ export default class GameScene extends Phaser.Scene {
 
     private setKeys() {
         if(gameManager.getCurrentGameState() === GAME_STATE.RUNNING) {
-            this.input.keyboard.on('keydown-Q', () => player.move('left'));
-            this.input.keyboard.on('keydown-E', () => player.move('right'));
+
+            if (this.input.keyboard.checkDown(keys.left)) {
+                player.move(SIDE.LEFT)
+            } else if (this.input.keyboard.checkDown(keys.right)){
+                player.move(SIDE.RIGHT)
+            }
             this.input.keyboard.on('keydown-SPACE', () => player.shootPiece());
         }
     }

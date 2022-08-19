@@ -25,8 +25,19 @@ export const WALL =  {
 }
 
 export const PIECE = {
-    WIDTH: 112,
-    HEIGHT: 111
+    WIDTH: 130,
+    HEIGHT: 129
+}
+
+export const LIMIT_MOV = {
+    LEFT: -3.0,
+    RIGHT: -0.1
+}
+
+export const GRID_LENGTH = {
+    Y: 5,
+    X_1: 8,
+    X_2: 7
 }
 
 export const PLAYER_POS = { 
@@ -34,7 +45,7 @@ export const PLAYER_POS = {
     HEIGHT: BACKGROUND.HEIGHT - 100
 }
 
-export const RAY_SPEED = 0.04;
+export const RAY_SPEED = 0.03;
 export const BALL_SPEED = 200;
 export const AVERAGE_LINE_SIZE = HALF_SCREEN.WIDTH;
 

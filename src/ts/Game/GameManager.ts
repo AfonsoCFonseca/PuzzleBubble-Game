@@ -1,6 +1,6 @@
 export let gameManager: GameManager
 
-import { GAME_STATE, SIDES } from '../game.interfaces';
+import { GAME_STATE, SIDE } from '../game.interfaces';
 import GameScene, { player } from '../Scenes/GameScene';
 
 import { BACKGROUND, GREEN_COLOR, HALF_SCREEN, RED_COLOR, WALL } from '../Utils/gameValues';
@@ -82,7 +82,7 @@ export default class GameManager {
                 let intersectionRight  = Phaser.Geom.Intersects.GetLineToRectangle(currentLine, this.rightWall);
                 ({ side, currentPoint } = getPointFromWall(intersectionLeft) || getPointFromWall(intersectionRight) || {})
             } else {
-                const wall = side === SIDES.LEFT ? this.rightWall : this.leftWall;
+                const wall = side === SIDE.LEFT ? this.rightWall : this.leftWall;
                 let intersection  = Phaser.Geom.Intersects.GetLineToRectangle(currentLine, wall);
                 ({ side, currentPoint }  = getPointFromWall(intersection) || {});
             }

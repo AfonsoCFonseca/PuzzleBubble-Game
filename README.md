@@ -18,6 +18,10 @@ This class handles the movement and storing of the aim lines,  the shooting of n
 ### Piece ###
 The Piece instance represent each individual piece drawn in the map. Also makes the movement animation between aiming lines when the player shoots it, calculating the speed of the ball movement and giving the necessary margin for the bounce with the walls
 
+### Grid ###
+The Grid is a singleton class created for managing all the pieces besides the player piece. It has an 2 dimensions array of Piece representing the group of pieces displayed on the map, where the x changes depending on the y position, creating a proper map pattern.
+The creation is made by a randomizer of ints to pick a color when instantiating.
+
 ---------------------------------------------------------------
 # Development
 Started the development by investigating how Phaser handles aiming. Since raycasting isn't an option of native Phaser, I decided to implement it via Phaser.Geom, a light way of managing lines as aim lines with rectangles as walls and the related intersections between them. This way, was possible to calculate both points of each aim line from drawing lines and calculate hard angle options with a lot of aim lines.
@@ -27,6 +31,8 @@ Only when I reach that goal I had officialized the development of the game and p
 After I started by focusing on the shooting piece, its moving animation, its deletion when reaching out of screen coords and the generation of a new one. The calculation of the speed of movement changes depending on the trajectory the ball has to travel, with that in mind, I applied the Pythagorean theorem to the subtraction of the destiny and origin point of both axis, having that I just had to multiply its value by itself and add both together and finally finding out the square root to that value. Having that result I just applied the rule of three with constants speeds and average line width to find out the final speed for dynamic lines
 
 Created a menu scene and the logic between scene transistion. After, added the game over menu and applied the game over, start and reset game functions
+
+After some fine-tuning and exception handling of the player movement and shooting, I started developing the map grid as a class and storing a 2D array of pieces for storing every piece on the map. Also added the randomizer of the different types of pieces in a sprite and stored it as an enum, using it on the Piece class.
 
 ---------------------------------------------------------------
 # Sketches & Evolution

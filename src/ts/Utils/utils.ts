@@ -1,7 +1,7 @@
-import { SIDES } from '../game.interfaces';
+import { BALL_TYPES, SIDE } from '../game.interfaces';
 import { myGraphics } from '../Game/GameManager';
 import { gameScene } from '../Scenes/GameScene';
-import { BACKGROUND, PLAYER_POS, RED_COLOR, WALL } from './gameValues';
+import { BACKGROUND, LIMIT_MOV, PLAYER_POS, RED_COLOR, WALL } from './gameValues';
 
 export const makeAnimation = (target: Phaser.GameObjects.Image, { x, y }: {x: number, y: number},
         duration:number, callback?: Function): Phaser.Tweens.Tween =>  {
@@ -28,7 +28,7 @@ export const getPointFromWall = (intersections: Phaser.Geom.Point []) => {
     intersections.forEach((point:Phaser.Geom.Point) => {
         if(point.x === WALL.WIDTH || point.x === (BACKGROUND.WIDTH - WALL.WIDTH)) {
             currentPoint = point;
-            side = point.x === WALL.WIDTH ? SIDES.LEFT : SIDES.RIGHT;
+            side = point.x === WALL.WIDTH ? SIDE.LEFT : SIDE.RIGHT;
             return;
         }
     })
@@ -58,4 +58,40 @@ export const applyPythagoreanTheorem = (x:number , y: number): number => {
     y *= y
     let lineDistance = x + y
     return Math.sqrt(lineDistance )
+}
+
+export const isMovementLimit = (angle, side):boolean => {
+    if (side === SIDE.LEFT && angle <= LIMIT_MOV.LEFT) {
+        return false
+    } else if (side === SIDE.RIGHT && angle >= LIMIT_MOV.RIGHT) {
+        return false
+    } else {
+        return true;
+    }
+}
+
+export function rndNumber(min: number, max: number, round = false): number {
+    if (round) return Math.round(Math.random() * (max - min) + min);
+    return Math.random() * (max - min) + min;
+}
+
+export function getBallType(pos: number): BALL_TYPES {
+    switch(pos) {
+        case 0: 
+            return BALL_TYPES.DARK_ORANGE;
+        case 1: 
+            return BALL_TYPES.RED;
+        case 2: 
+            return BALL_TYPES.GREEN;
+        case 3: 
+            return BALL_TYPES.BLACK;
+        case 4: 
+            return BALL_TYPES.BLUE;
+        case 5: 
+            return BALL_TYPES.ORANGE;
+        case 5: 
+            return BALL_TYPES.PINK;
+        default: 
+            return BALL_TYPES.DARK_ORANGE;
+    }
 }
