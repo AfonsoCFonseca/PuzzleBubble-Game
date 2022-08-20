@@ -13,7 +13,7 @@ export let player: Player;
 export let grid: Grid;
 export let gameManager: GameManager;
 
-export let wallGroup: Phaser.GameObjects.Group;
+export let piecesGroup: Phaser.GameObjects.Group;
 export let gameOverGroup: Phaser.GameObjects.Group;
 
 export let aimArrow: Phaser.GameObjects.Image;
@@ -26,13 +26,15 @@ export default class GameScene extends Phaser.Scene {
     private rightWall;
     private bgColor;
 
+    private currentPieceCollider;
+
     constructor() {
         super('GameScene');
         gameScene = this;
     }
 
     init(data) {
-        this.bgColor = data.color;
+        this.bgColor = data.color || "0x" + Math.floor(Math.random()*16777215).toString(16);;
     }
 
     preload() {
@@ -48,7 +50,7 @@ export default class GameScene extends Phaser.Scene {
             frameHeight: PIECE.HEIGHT
         });
 
-        wallGroup = this.add.group();
+        piecesGroup = this.add.group();
         gameOverGroup = this.add.group();
     }
 
@@ -73,6 +75,8 @@ export default class GameScene extends Phaser.Scene {
         gameManager = new GameManager(graphics);
         grid = new Grid();
         player = new Player(gameManager);
+
+        this.pieceCollision();
     }
 
     private resetGame() {
@@ -116,13 +120,30 @@ export default class GameScene extends Phaser.Scene {
         this.rightWall = this.add.rectangle(BACKGROUND.WIDTH - WALL.WIDTH, 0, 
             WALL.WIDTH, BACKGROUND.HEIGHT).setOrigin(0,0);
         gameScene.physics.add.existing(this.rightWall);
+    }
 
-        wallGroup.addMultiple([this.leftWall, this.rightWall]);
+    public pieceCollision() {
+        const self = this;
+        this.currentPieceCollider = this.physics.add.collider(player.getCurrentPiece(), piecesGroup, (playerPiece, gridPiece) => {
+            if(player.getCurrentPiece() === playerPiece) {
+                const currentPiece = playerPiece as Piece;
+                currentPiece.stopMovement();
+                piecesGroup.add(currentPiece);
+                player.generatePiece();
+                self.refreshCollision()
+            }
+        });
+    }
+
+    public refreshCollision() {
+        if(this.currentPieceCollider){
+            this.currentPieceCollider = null;
+        }
+        this.pieceCollision()
     }
 
     private setKeys() {
         if(gameManager.getCurrentGameState() === GAME_STATE.RUNNING) {
-
             if (this.input.keyboard.checkDown(keys.left)) {
                 player.move(SIDE.LEFT)
             } else if (this.input.keyboard.checkDown(keys.right)){

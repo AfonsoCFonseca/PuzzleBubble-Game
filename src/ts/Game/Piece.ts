@@ -1,5 +1,5 @@
 import { BALL_TYPES as BALL_COLORS, Position } from "../game.interfaces";
-import { gameScene, wallGroup, player } from "../Scenes/GameScene"
+import { gameScene, piecesGroup, player } from "../Scenes/GameScene"
 import { AVERAGE_LINE_SIZE, BACKGROUND, BALL_SPEED, HALF_SCREEN, PIECE } from "../Utils/gameValues";
 import { applyPythagoreanTheorem, getBallType, makeAnimation, rndNumber } from "../Utils/utils";
 
@@ -7,14 +7,25 @@ export default class Piece extends Phaser.GameObjects.Sprite {
 
     shootingCallback: Function;
     private color: BALL_COLORS;
-
-    constructor({ x, y }: Position) {
-        let spritePositon = rndNumber(0,7, true)
+    private currentAnimation = null;
+    private isPlayerPiece: boolean;
+    
+    constructor({ x, y }: Position, isPlayerPiece: boolean) {
+        let spritePositon = rndNumber(0, 6, true)
         super(gameScene, x, y, 'bubbles', spritePositon)
+        this.isPlayerPiece = isPlayerPiece;
         this.color = getBallType(spritePositon)
         gameScene.physics.add.existing(this);
         gameScene.physics.world.enable(this);
         gameScene.add.existing(this).setDepth(1).setOrigin(0.5,0.5);
+        // var ball2 = this.physics.add.image(700, 240, 'wizball');
+        // this.setCircle(46);
+
+
+        
+        if(!isPlayerPiece) {
+            piecesGroup.add(this);
+        }
     }
 
     public shoot(secondAimLines: Phaser.Geom.Line[], 
@@ -30,7 +41,7 @@ export default class Piece extends Phaser.GameObjects.Sprite {
     private move( {x, y}, nextPos, animSpeed, secondaryLines) {
 
         // const xWithMargin = x + (this.x > x ? PIECE.WIDTH/2 : -PIECE.WIDTH/2);
-        makeAnimation(this, { x, y }, animSpeed, () => {
+        this.currentAnimation = makeAnimation(this, { x, y }, animSpeed, () => {
             const nextLine = secondaryLines[nextPos];
             if(nextLine) {
                 nextPos++
@@ -38,13 +49,12 @@ export default class Piece extends Phaser.GameObjects.Sprite {
                 this.move(nextLine.getPointB(), nextPos, animSpeed, secondaryLines)
             } else {
                 this.shootingCallback();
-                this.deletePiece()
             }
         })
     }
 
-    private deletePiece() {
-        this.destroy();
+    public stopMovement() {
+        if(this.currentAnimation) this.currentAnimation.stop()
     }
     
     private calculateSpeedToDistance({ x,y }: { x:number , y: number }):number {

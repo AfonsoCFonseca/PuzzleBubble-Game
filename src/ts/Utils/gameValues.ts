@@ -21,7 +21,8 @@ export const GAMEOVER_BOARD = {
 
 export const WALL =  {
     WIDTH: 90,
-    HEIGHT: BACKGROUND.HEIGHT
+    HEIGHT: BACKGROUND.HEIGHT,
+    TOP_HEIGHT: 44,
 }
 
 export const PIECE = {
@@ -36,7 +37,7 @@ export const LIMIT_MOV = {
 
 export const GRID_LENGTH = {
     Y: 5,
-    X_1: 8,
+    X: 8,
     X_2: 7
 }
 
@@ -48,6 +49,7 @@ export const PLAYER_POS = {
 export const RAY_SPEED = 0.03;
 export const BALL_SPEED = 200;
 export const AVERAGE_LINE_SIZE = HALF_SCREEN.WIDTH;
+export const TIME_BEFORE_DELETE_PIECE = 100;
 
 export const RED_COLOR = 0xFF0000;
 export const GREEN_COLOR = 0x00aa00;
