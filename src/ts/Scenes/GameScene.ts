@@ -4,7 +4,7 @@ import Player from '../Game/Player'
 import Piece from '../Game/Piece'
 
 import { ARROW_IMAGE, BACKGROUND, GAMEOVER_BOARD, HALF_SCREEN, PIECE, WALL } from '../Utils/gameValues';
-import { GAME_STATE, SIDE } from '../game.interfaces';
+import { BALL_TYPES, GAME_STATE, SIDE } from '../game.interfaces';
 import Grid from '../Game/Grid';
 
 export let gameScene: Phaser.Scene;
@@ -14,6 +14,7 @@ export let grid: Grid;
 export let gameManager: GameManager;
 
 export let piecesGroup: Phaser.GameObjects.Group;
+export let invisiblePiecesGroup: Phaser.GameObjects.Group;
 export let gameOverGroup: Phaser.GameObjects.Group;
 
 export let aimArrow: Phaser.GameObjects.Image;
@@ -51,6 +52,7 @@ export default class GameScene extends Phaser.Scene {
         });
 
         piecesGroup = this.add.group();
+        invisiblePiecesGroup = this.add.group();
         gameOverGroup = this.add.group();
     }
 
@@ -124,19 +126,20 @@ export default class GameScene extends Phaser.Scene {
 
     public pieceCollision() {
         const self = this;
-        this.currentPieceCollider = this.physics.add.collider(player.getCurrentPiece(), piecesGroup, (playerPiece, gridPiece) => {
-            if(player.getCurrentPiece() === playerPiece) {
-                const currentPiece = playerPiece as Piece;
-                currentPiece.stopMovement();
-                piecesGroup.add(currentPiece);
-                player.generatePiece();
-                self.refreshCollision()
-            }
+
+        this.currentPieceCollider = this.physics.add.collider(player.getCurrentPiece(), 
+            piecesGroup, (playerPiece, gridPiece) => {
+                if(player.getCurrentPiece() === playerPiece) {
+                    grid.addPlayerPieceToGrid(playerPiece as Piece, gridPiece as Piece);
+                    player.generatePiece();
+                    self.refreshCollision();
+                }
         });
     }
 
     public refreshCollision() {
         if(this.currentPieceCollider){
+            this.physics.world.removeCollider(this.currentPieceCollider);
             this.currentPieceCollider = null;
         }
         this.pieceCollision()

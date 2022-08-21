@@ -19,7 +19,7 @@ export default class Player {
     constructor(gameManager: GameManager) {
         this.aimLine = gameManager.getAimLine();
 
-        this.currentPiece = new Piece(this.playerPosition, true);
+        this.currentPiece = new Piece(this.playerPosition, true, null);
     }
 
     public getCurrentPiece(): Piece {
@@ -78,7 +78,7 @@ export default class Player {
     }
 
     public generatePiece() {
-        const newPiece = new Piece(this.playerPosition, true);
+        const newPiece = new Piece(this.playerPosition, true, null);
         this.setCurrentPiece(newPiece);
         this.isShooting = false;
     }

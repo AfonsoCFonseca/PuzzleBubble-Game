@@ -1,31 +1,38 @@
 import { BALL_TYPES as BALL_COLORS, Position } from "../game.interfaces";
-import { gameScene, piecesGroup, player } from "../Scenes/GameScene"
+import { gameScene, invisiblePiecesGroup, piecesGroup, player } from "../Scenes/GameScene"
 import { AVERAGE_LINE_SIZE, BACKGROUND, BALL_SPEED, HALF_SCREEN, PIECE } from "../Utils/gameValues";
 import { applyPythagoreanTheorem, getBallType, makeAnimation, rndNumber } from "../Utils/utils";
 
 export default class Piece extends Phaser.GameObjects.Sprite {
+    body: Phaser.Physics.Arcade.Body;
 
     shootingCallback: Function;
     private color: BALL_COLORS;
     private currentAnimation = null;
     private isPlayerPiece: boolean;
     
-    constructor({ x, y }: Position, isPlayerPiece: boolean) {
-        let spritePositon = rndNumber(0, 6, true)
+    constructor({ x, y }: Position, isPlayerPiece: boolean, pieceColor: BALL_COLORS | null) {
+        let spritePositon = pieceColor || rndNumber(0, 6, true)
         super(gameScene, x, y, 'bubbles', spritePositon)
         this.isPlayerPiece = isPlayerPiece;
-        this.color = getBallType(spritePositon)
+        this.color = pieceColor || getBallType(spritePositon);
+
+        this.setCollisionSpecs()
+
+        if(!this.isPlayerPiece && this.color !== BALL_COLORS.INVISIBLE) piecesGroup.add(this);
+        if(this.color === BALL_COLORS.INVISIBLE) invisiblePiecesGroup.add(this);
+    }
+
+    private setCollisionSpecs() {
         gameScene.physics.add.existing(this);
-        gameScene.physics.world.enable(this);
-        gameScene.add.existing(this).setDepth(1).setOrigin(0.5,0.5);
-        // var ball2 = this.physics.add.image(700, 240, 'wizball');
-        // this.setCircle(46);
-
-
+        if (this.isPlayerPiece === false) this.body.immovable = true;
+        this.body.setCircle(PIECE.WIDTH/2);
         
-        if(!isPlayerPiece) {
-            piecesGroup.add(this);
-        }
+        gameScene.add.existing(this).setDepth(1).setOrigin(0.5,0.5)
+    }
+
+    public getColor(): BALL_COLORS {
+        return this.color;
     }
 
     public shoot(secondAimLines: Phaser.Geom.Line[], 
@@ -39,8 +46,6 @@ export default class Piece extends Phaser.GameObjects.Sprite {
     }
 
     private move( {x, y}, nextPos, animSpeed, secondaryLines) {
-
-        // const xWithMargin = x + (this.x > x ? PIECE.WIDTH/2 : -PIECE.WIDTH/2);
         this.currentAnimation = makeAnimation(this, { x, y }, animSpeed, () => {
             const nextLine = secondaryLines[nextPos];
             if(nextLine) {
@@ -51,6 +56,12 @@ export default class Piece extends Phaser.GameObjects.Sprite {
                 this.shootingCallback();
             }
         })
+    }
+
+    public changeForGridPiece() {
+        this.stopMovement();
+        piecesGroup.add(this);
+        this.body.immovable = true;
     }
 
     public stopMovement() {

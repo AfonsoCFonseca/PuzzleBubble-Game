@@ -22,5 +22,6 @@ export enum BALL_TYPES {
     BLACK,
     BLUE,
     ORANGE,
-    PINK
+    PINK,
+    INVISIBLE
 }

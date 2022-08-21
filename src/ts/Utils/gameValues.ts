@@ -38,7 +38,7 @@ export const LIMIT_MOV = {
 export const GRID_LENGTH = {
     Y: 5,
     X: 8,
-    X_2: 7
+    MAX_HEIGHT: 13
 }
 
 export const PLAYER_POS = { 
