@@ -1,5 +1,6 @@
 import { BALL_TYPES, SIDE } from '../game.interfaces';
 import { myGraphics } from '../Game/GameManager';
+import Piece from '../Game/Piece';
 import { gameScene } from '../Scenes/GameScene';
 import { BACKGROUND, LIMIT_MOV, PLAYER_POS, RED_COLOR, WALL } from './gameValues';
 
@@ -70,7 +71,7 @@ export const isMovementLimit = (angle, side):boolean => {
     }
 }
 
-export function rndNumber(min: number, max: number, round = false): number {
+export function rndNumber(min: number, max: number, round = true): number {
     if (round) return Math.round(Math.random() * (max - min) + min);
     return Math.random() * (max - min) + min;
 }
@@ -94,4 +95,18 @@ export function getBallType(pos: number): BALL_TYPES {
         default: 
             return BALL_TYPES.DARK_ORANGE;
     }
+}
+
+export function calculateClosestInvisiblePiece(playerPiece: Piece, 
+    invisiblePieces: Piece[]): Piece {
+        let totalOfDistancesArr: number[] = [];
+        invisiblePieces.forEach( invisiblePiece => {
+            const diffX = Math.max(Math.abs(playerPiece.x), Math.abs(invisiblePiece.x)) -
+                Math.min(Math.abs(playerPiece.x), Math.abs(invisiblePiece.x))
+            const diffY = Math.max(Math.abs(playerPiece.y), Math.abs(invisiblePiece.y)) -
+                Math.min(Math.abs(playerPiece.y), Math.abs(invisiblePiece.y))
+                totalOfDistancesArr.push(diffY + diffX);
+        })
+
+        return invisiblePieces[totalOfDistancesArr.indexOf(Math.min(...totalOfDistancesArr))];
 }

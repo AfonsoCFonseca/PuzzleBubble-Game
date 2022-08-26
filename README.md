@@ -13,15 +13,15 @@ The gamemanager will handle both classes
 Takes care of the Phaser.Geoms rendering for the aim lines, checking for intersections with the walls (Rectangles) and doing the math for calculated angles
 
 ### Player ###
-This class handles the movement and storing of the aim lines, the shooting of new pieces
+This class handles the movement and storing of the aim lines, the shooting of new pieces and the trigger for generating new player pieces
 
 ### Piece ###
 The Piece instance represent each individual piece drawn in the map. Also makes the movement animation between aiming lines when the player shoots it, calculating the speed of the ball movement and giving the necessary margin for the bounce with the walls
 
 ### Grid ###
-The Grid is a singleton class created for managing all the pieces besides the player piece. It has an 2 dimensions array of Piece representing the group of pieces displayed on the map, where the x changes depending on the y position, creating a proper map pattern.
+The Grid is a singleton class created for managing all the pieces besides the player piece. It has a 2 dimensions array of Piece representing the group of pieces displayed on the map, where the x changes depending on the y position, creating a proper map pattern.
 The creation is made by a randomizer of ints to pick a color when instantiating. 
-The Grid is also responsible for storing invisible Pieces in the array, to represent the empty space where the player piece will fit once shooted by the player
+The Grid is also responsible for storing invisible Pieces in the array, to represent the empty space where the player piece will fit once shooted by the player. This class also converts the player pieces to grid piece
 
 ---------------------------------------------------------------
 # Development
@@ -35,7 +35,7 @@ Created a menu scene and the logic between scene transistion. After, added the g
 
 After some fine-tuning and exception handling of the player movement and shooting, I started developing the map grid as a class and storing a 2D array of pieces for storing every piece on the map. Also added the randomizer of the different types of pieces in a sprite and stored it as an enum, using it on the Piece class.
 
-The piece collision was the next phase to tackle. Added the grid pieces to a Phaser.group and listen to a collision between the group and the player piece. If a collision is detected, the player piece animation stops and a new piece is generated
+The piece collision was the next phase to tackle. Added the grid pieces to a Phaser.group and listen to a collision between the group and the player pieces. If a collision is detected, the player piece animation stops and a new piece is generated. When the animation stops, another overlap collision is created between the player piece and the invisible pieces (explained in the Grid class) to understand what are the pieces that overlaps the player's in terms of space, when found a calculation is made to understand the nearest one and a movement animation is played to that same spot. When this happen the player piece is converted to a grid piece
 
 ---------------------------------------------------------------
 # Sketches & Evolution

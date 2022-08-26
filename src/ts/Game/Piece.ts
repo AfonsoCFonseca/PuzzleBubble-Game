@@ -11,11 +11,10 @@ export default class Piece extends Phaser.GameObjects.Sprite {
     private currentAnimation = null;
     private isPlayerPiece: boolean;
     
-    constructor({ x, y }: Position, isPlayerPiece: boolean, pieceColor: BALL_COLORS | null) {
-        let spritePositon = pieceColor || rndNumber(0, 6, true)
-        super(gameScene, x, y, 'bubbles', spritePositon)
+    constructor({ x, y }: Position, isPlayerPiece: boolean, pieceColor: BALL_COLORS) {
+        super(gameScene, x, y, 'bubbles', pieceColor)
         this.isPlayerPiece = isPlayerPiece;
-        this.color = pieceColor || getBallType(spritePositon);
+        this.color = pieceColor || getBallType(pieceColor);
 
         this.setCollisionSpecs()
 
@@ -27,7 +26,6 @@ export default class Piece extends Phaser.GameObjects.Sprite {
         gameScene.physics.add.existing(this);
         if (this.isPlayerPiece === false) this.body.immovable = true;
         this.body.setCircle(PIECE.WIDTH/2);
-        
         gameScene.add.existing(this).setDepth(1).setOrigin(0.5,0.5)
     }
 
@@ -41,17 +39,23 @@ export default class Piece extends Phaser.GameObjects.Sprite {
         const destinyPoint = secondAimLines[0]?.getPointA() || player.getAimLine().getPointB();
         const animSpeed = this.calculateSpeedToDistance(destinyPoint);
         const secondaryLines = [...player.getSecondaryAimLines()];
-        this.move(destinyPoint, 0, animSpeed, secondaryLines);
+        this.shootingMove(destinyPoint, 0, animSpeed, secondaryLines);
 
     }
 
-    private move( {x, y}, nextPos, animSpeed, secondaryLines) {
-        this.currentAnimation = makeAnimation(this, { x, y }, animSpeed, () => {
+    public move({x,y}, animSpeed, callback) {
+        return makeAnimation(this, { x, y }, animSpeed, () => {
+            if(callback) callback()
+        })
+    }
+
+    public shootingMove( {x, y}, nextPos, animSpeed, secondaryLines) {
+        this.currentAnimation = this.move({ x, y }, animSpeed, () => {
             const nextLine = secondaryLines[nextPos];
             if(nextLine) {
                 nextPos++
                 const animSpeed = this.calculateSpeedToDistance(nextLine.getPointB());
-                this.move(nextLine.getPointB(), nextPos, animSpeed, secondaryLines)
+                this.shootingMove(nextLine.getPointB(), nextPos, animSpeed, secondaryLines)
             } else {
                 this.shootingCallback();
             }

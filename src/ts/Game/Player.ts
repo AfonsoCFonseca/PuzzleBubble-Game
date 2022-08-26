@@ -2,7 +2,7 @@ import { BACKGROUND, HALF_SCREEN, PIECE, RAY_SPEED, TIME_BEFORE_DELETE_PIECE } f
 import GameManager, { gameManager } from "./GameManager";
 import { aimArrow, gameScene } from "../Scenes/GameScene";
 import Piece from "./Piece";
-import { isMovementLimit } from "../Utils/utils";
+import { isMovementLimit, rndNumber } from "../Utils/utils";
 import { SIDE } from "../game.interfaces";
 
 export default class Player {
@@ -19,7 +19,7 @@ export default class Player {
     constructor(gameManager: GameManager) {
         this.aimLine = gameManager.getAimLine();
 
-        this.currentPiece = new Piece(this.playerPosition, true, null);
+        this.currentPiece = new Piece(this.playerPosition, true, rndNumber(0, 6));
     }
 
     public getCurrentPiece(): Piece {
@@ -66,7 +66,7 @@ export default class Player {
                 setTimeout(() => {
                     this.erasePiece();
                     this.generatePiece();
-                }, TIME_BEFORE_DELETE_PIECE)
+                }, TIME_BEFORE_DELETE_PIECE);
             })
             this.isShooting = true;
         }
@@ -78,7 +78,7 @@ export default class Player {
     }
 
     public generatePiece() {
-        const newPiece = new Piece(this.playerPosition, true, null);
+        const newPiece = new Piece(this.playerPosition, true, rndNumber(0, 6));
         this.setCurrentPiece(newPiece);
         this.isShooting = false;
     }

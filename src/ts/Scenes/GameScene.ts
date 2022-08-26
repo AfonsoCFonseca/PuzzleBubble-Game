@@ -130,9 +130,10 @@ export default class GameScene extends Phaser.Scene {
         this.currentPieceCollider = this.physics.add.collider(player.getCurrentPiece(), 
             piecesGroup, (playerPiece, gridPiece) => {
                 if(player.getCurrentPiece() === playerPiece) {
-                    grid.addPlayerPieceToGrid(playerPiece as Piece, gridPiece as Piece);
-                    player.generatePiece();
-                    self.refreshCollision();
+                    grid.addPlayerPieceToGrid(playerPiece as Piece, gridPiece as Piece, () => {
+                        player.generatePiece();
+                        self.refreshCollision();
+                    });
                 }
         });
     }

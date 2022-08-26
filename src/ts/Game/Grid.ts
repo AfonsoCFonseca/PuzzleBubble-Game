@@ -1,7 +1,8 @@
 import { debugMap } from '../debugMap';
 import { BALL_TYPES } from '../game.interfaces';
-import { gameScene, invisiblePiecesGroup } from '../Scenes/GameScene';
+import { gameScene, grid, invisiblePiecesGroup } from '../Scenes/GameScene';
 import { GRID_LENGTH, HALF_SCREEN, PIECE, WALL } from '../Utils/gameValues'
+import { calculateClosestInvisiblePiece, makeAnimation, rndNumber } from '../Utils/utils';
 import Piece from './Piece';
 
 export default class Grid {
@@ -9,7 +10,7 @@ export default class Grid {
     currentGrid: Piece[][] = [];
 
     constructor() {
-        this.buildGrid(true);
+        this.buildGrid(false);
     }
 
     private buildGrid(debug: boolean = false) {
@@ -19,7 +20,7 @@ export default class Grid {
             const maxGridLenth = GRID_LENGTH.X - (i % 2 === 0 ? 0 : 1);
             const xLenght = debug ? debugMap[i].length : maxGridLenth
             for(let j = 0; j < xLenght; j++) {
-                const pieceColor = debug ? debugMap[i][j] : null;
+                const pieceColor = debug ? debugMap[i][j] : rndNumber(0, 6);
                 this.addPieceToGrid(i, j, pieceColor)
             }
         }
@@ -62,13 +63,21 @@ export default class Grid {
         return y;
     }
 
-    public addPlayerPieceToGrid(playerPiece: Piece, gridPiece: Piece) {
+    public addPlayerPieceToGrid(playerPiece: Piece, gridPiece: Piece, callback) {
         playerPiece.changeForGridPiece();
-
+        let invisiblePiecesArr = [];
         const currentPieceCollider = gameScene.physics.add.overlap(playerPiece, 
             invisiblePiecesGroup, (playerPiece, gridPiece) => {
-                console.log(gridPiece)
+                invisiblePiecesArr.push(gridPiece as Piece);
                 gameScene.physics.world.removeCollider(currentPieceCollider);
         });
+        // A delay is needed to collect every overlap, since the overlap method fires a
+        // callback for every time a event is found
+        setTimeout(() => {
+            const selectedInvisiblePiece = calculateClosestInvisiblePiece(playerPiece, invisiblePiecesArr);
+            playerPiece.move({ x: selectedInvisiblePiece.x, y: selectedInvisiblePiece.y }, 50, null)
+            callback();
+        }, 50)
+
     }
 }
