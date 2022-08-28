@@ -11,15 +11,28 @@ export default class Player {
     private secondaryAimLine: Phaser.Geom.Line[] = [];
     private currentPiece: Piece = null;
     private isShooting = false;
+    private nextPiece: Piece;
     private playerPosition = {
         x: HALF_SCREEN.WIDTH, 
         y: BACKGROUND.HEIGHT - PIECE.HEIGHT + 10
+    }
+    private playerNextPosition = {
+        x: HALF_SCREEN.WIDTH - 185, 
+        y: BACKGROUND.HEIGHT - PIECE.HEIGHT + 5
     }
 
     constructor(gameManager: GameManager) {
         this.aimLine = gameManager.getAimLine();
 
-        this.currentPiece = new Piece(this.playerPosition, true, rndNumber(0, 6));
+        this.nextPiece = new Piece(this.playerNextPosition,{
+            isPlayerPiece: true,
+            pieceColor: rndNumber(0, 6),
+            isNextBall: true,
+        });
+        this.currentPiece = new Piece(this.playerPosition,{
+            isPlayerPiece: true,
+            pieceColor: rndNumber(0, 6),
+        });
     }
 
     public getCurrentPiece(): Piece {
@@ -78,7 +91,15 @@ export default class Player {
     }
 
     public generatePiece() {
-        const newPiece = new Piece(this.playerPosition, true, rndNumber(0, 6));
+        const newPiece = new Piece(this.playerPosition, {
+            isPlayerPiece: true,
+            pieceColor:  this.nextPiece.getColor()
+        })
+        this.nextPiece = new Piece(this.playerNextPosition, {
+            isPlayerPiece: true,
+            pieceColor:  rndNumber(0, 6),
+            isNextBall: true,
+        });
         this.setCurrentPiece(newPiece);
         this.isShooting = false;
     }

@@ -42,7 +42,10 @@ export default class Grid {
         const x = this.calculateXPosition(i, j);
         const y = this.calculateYPosition(i);
 
-        this.currentGrid[i].push(new Piece({x, y}, false, pieceType))
+        this.currentGrid[i].push(new Piece({x, y}, {
+            isPlayerPiece: false,
+            pieceColor: pieceType
+        }))
     }
 
     private calculateXPosition(i: number, j: number): number {
@@ -75,7 +78,7 @@ export default class Grid {
         // callback for every time a event is found
         setTimeout(() => {
             const selectedInvisiblePiece = calculateClosestInvisiblePiece(playerPiece, invisiblePiecesArr);
-            playerPiece.move({ x: selectedInvisiblePiece.x, y: selectedInvisiblePiece.y }, 50, null)
+            playerPiece.move({ x: selectedInvisiblePiece.x, y: selectedInvisiblePiece.y }, 10, null)
             callback();
         }, 50)
 

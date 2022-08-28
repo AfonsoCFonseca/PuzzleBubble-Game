@@ -1,5 +1,11 @@
 // export type TileType = 'W' | 'R' | 'Y' | 'G' | 'O' | 'B' | 'P';
 
+export interface PieceConfigs {
+    isPlayerPiece: boolean,
+    isNextBall?: boolean,
+    pieceColor: BALL_TYPES 
+}
+
 export interface Position {
     x: number,
     y: number

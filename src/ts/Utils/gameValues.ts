@@ -47,7 +47,7 @@ export const PLAYER_POS = {
 }
 
 export const RAY_SPEED = 0.03;
-export const BALL_SPEED = 200;
+export const BALL_SPEED = 120;
 export const AVERAGE_LINE_SIZE = HALF_SCREEN.WIDTH;
 export const TIME_BEFORE_DELETE_PIECE = 100;
 

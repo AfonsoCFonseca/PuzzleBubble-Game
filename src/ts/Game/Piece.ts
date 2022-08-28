@@ -1,4 +1,4 @@
-import { BALL_TYPES as BALL_COLORS, Position } from "../game.interfaces";
+import { BALL_TYPES as BALL_COLORS, PieceConfigs, Position } from "../game.interfaces";
 import { gameScene, invisiblePiecesGroup, piecesGroup, player } from "../Scenes/GameScene"
 import { AVERAGE_LINE_SIZE, BACKGROUND, BALL_SPEED, HALF_SCREEN, PIECE } from "../Utils/gameValues";
 import { applyPythagoreanTheorem, getBallType, makeAnimation, rndNumber } from "../Utils/utils";
@@ -11,8 +11,9 @@ export default class Piece extends Phaser.GameObjects.Sprite {
     private currentAnimation = null;
     private isPlayerPiece: boolean;
     
-    constructor({ x, y }: Position, isPlayerPiece: boolean, pieceColor: BALL_COLORS) {
+    constructor({ x, y }: Position, { isPlayerPiece, pieceColor, isNextBall }: PieceConfigs) {
         super(gameScene, x, y, 'bubbles', pieceColor)
+        if (isNextBall) this.setScale(0.8);
         this.isPlayerPiece = isPlayerPiece;
         this.color = pieceColor || getBallType(pieceColor);
 

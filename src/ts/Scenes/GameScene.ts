@@ -45,6 +45,8 @@ export default class GameScene extends Phaser.Scene {
         this.load.image('aimArrow', 'assets/longarrow-black.png');
         this.load.image('buttonReset', 'assets/buttonReset.png')
         this.load.image('buttonMenu', 'assets/buttonMenu.png')
+        this.load.image('ballFrame', 'assets/ballFrame.png')
+        this.load.image('ballNextFrame', 'assets/ballNextFrame.png')
 
         this.load.spritesheet('bubbles', 'assets/bubbles.png', {
             frameWidth: PIECE.WIDTH,
@@ -111,12 +113,16 @@ export default class GameScene extends Phaser.Scene {
 
     private createFrameAndWalls() {
         this.add.image(0, 0, 'background').setOrigin(0, 0);
+        this.add.image(0, 0, 'frame').setOrigin(0, 0);
+
+        this.add.image(HALF_SCREEN.WIDTH - 110, BACKGROUND.HEIGHT - 230, 'ballFrame').setOrigin(0, 0);
+        this.add.image(HALF_SCREEN.WIDTH - 280, BACKGROUND.HEIGHT - 210, 'ballNextFrame').setOrigin(0, 0);
+
         this.add.rectangle(0, 0, BACKGROUND.WIDTH, BACKGROUND.HEIGHT, 
             parseInt(this.bgColor), 0.3).setOrigin(0,0);
         aimArrow = this.add.image(HALF_SCREEN.WIDTH,
             BACKGROUND.HEIGHT - 100, 'aimArrow').setOrigin(0, 0.5);
         aimArrow.angle = ARROW_IMAGE.INITIAL_ANGLE;
-        this.add.image(0, 0, 'frame').setOrigin(0, 0);
         this.leftWall = this.add.rectangle(0, 0, WALL.WIDTH, BACKGROUND.HEIGHT).setOrigin(0,0);
         gameScene.physics.add.existing(this.leftWall);
         this.rightWall = this.add.rectangle(BACKGROUND.WIDTH - WALL.WIDTH, 0, 
