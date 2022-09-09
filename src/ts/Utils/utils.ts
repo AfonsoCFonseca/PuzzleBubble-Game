@@ -1,8 +1,8 @@
-import { BALL_TYPES, SIDE } from '../game.interfaces';
+import { BALL_TYPES, Position, SIDE } from '../game.interfaces';
 import { myGraphics } from '../Game/GameManager';
 import Piece from '../Game/Piece';
 import { gameScene } from '../Scenes/GameScene';
-import { BACKGROUND, LIMIT_MOV, PLAYER_POS, RED_COLOR, WALL } from './gameValues';
+import { BACKGROUND, LIMIT_MOV, PIECE, PLAYER_POS, RED_COLOR, WALL } from './gameValues';
 
 export const makeAnimation = (target: Phaser.GameObjects.Image, { x, y }: {x: number, y: number},
         duration:number, callback?: Function): Phaser.Tweens.Tween =>  {
@@ -15,7 +15,9 @@ export const makeAnimation = (target: Phaser.GameObjects.Image, { x, y }: {x: nu
         duration,
         repeat: 0,
         onComplete() {
-            if(callback) callback();
+            if(callback) {
+                callback();
+            } 
         }
     });
 
@@ -108,5 +110,16 @@ export function calculateClosestInvisiblePiece(playerPiece: Piece,
                 totalOfDistancesArr.push(diffY + diffX);
         })
 
-        return invisiblePieces[totalOfDistancesArr.indexOf(Math.min(...totalOfDistancesArr))];
+    return invisiblePieces[totalOfDistancesArr.indexOf(Math.min(...totalOfDistancesArr))];
+}
+
+export function convertArrayPositionToAxis({i, j}: {i: number, j: number}) {
+    
+}
+
+export function convertAxisToArrayPosition({x, y}: {x: number, y: number}){
+    return {
+        i: Math.floor(y / PIECE.HEIGHT),
+        j: Math.floor(x / PIECE.WIDTH) - 1
+    }
 }

@@ -84,7 +84,7 @@ export default class GameManager {
             } else {
                 const wall = side === SIDE.LEFT ? this.rightWall : this.leftWall;
                 let intersection  = Phaser.Geom.Intersects.GetLineToRectangle(currentLine, wall);
-                ({ side, currentPoint }  = getPointFromWall(intersection) || {});
+                ({ side, currentPoint } = getPointFromWall(intersection) || {});
             }
 
             if (currentPoint) {

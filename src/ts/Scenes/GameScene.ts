@@ -64,6 +64,7 @@ export default class GameScene extends Phaser.Scene {
             right: 'E'
         });
         this.startGame();
+        gameScene = this;
     }
 
     update() {
@@ -116,8 +117,8 @@ export default class GameScene extends Phaser.Scene {
         this.add.image(0, 0, 'frame').setOrigin(0, 0);
 
         this.add.image(HALF_SCREEN.WIDTH - 110, BACKGROUND.HEIGHT - 230, 'ballFrame').setOrigin(0, 0);
-        this.add.image(HALF_SCREEN.WIDTH - 280, BACKGROUND.HEIGHT - 210, 'ballNextFrame').setOrigin(0, 0);
-
+        this.add.image(HALF_SCREEN.WIDTH - 270, BACKGROUND.HEIGHT - 210, 'ballNextFrame').setOrigin(0, 0);
+        
         this.add.rectangle(0, 0, BACKGROUND.WIDTH, BACKGROUND.HEIGHT, 
             parseInt(this.bgColor), 0.3).setOrigin(0,0);
         aimArrow = this.add.image(HALF_SCREEN.WIDTH,
@@ -137,11 +138,10 @@ export default class GameScene extends Phaser.Scene {
             piecesGroup, (playerPiece, gridPiece) => {
                 if(player.getCurrentPiece() === playerPiece) {
                     grid.addPlayerPieceToGrid(playerPiece as Piece, gridPiece as Piece, () => {
-                        player.generatePiece();
                         self.refreshCollision();
                     });
                 }
-        });
+            });
     }
 
     public refreshCollision() {

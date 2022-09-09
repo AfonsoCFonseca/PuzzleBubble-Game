@@ -1,9 +1,10 @@
 import { BACKGROUND, HALF_SCREEN, PIECE, RAY_SPEED, TIME_BEFORE_DELETE_PIECE } from "../Utils/gameValues";
 import GameManager, { gameManager } from "./GameManager";
-import { aimArrow, gameScene } from "../Scenes/GameScene";
+import GameScene, { aimArrow, gameScene } from "../Scenes/GameScene";
 import Piece from "./Piece";
 import { isMovementLimit, rndNumber } from "../Utils/utils";
 import { SIDE } from "../game.interfaces";
+import { config, game } from "../App";
 
 export default class Player {
 
@@ -75,11 +76,13 @@ export default class Player {
 
     public shootPiece() {
         if (this.isShooting === false) {
-            this.currentPiece.shoot(this.getSecondaryAimLines() , () => {
+            this.currentPiece.shoot(this.getSecondaryAimLines() , (collidedWithGrid: boolean) => {
+                const timeBeforeDelete = collidedWithGrid ? 0 : TIME_BEFORE_DELETE_PIECE;
                 setTimeout(() => {
-                    this.erasePiece();
+                    if (collidedWithGrid === false ) this.erasePiece();
                     this.generatePiece();
-                }, TIME_BEFORE_DELETE_PIECE);
+                    // this.currentPiece.eraseDebugString();
+                }, timeBeforeDelete);
             })
             this.isShooting = true;
         }
@@ -95,6 +98,7 @@ export default class Player {
             isPlayerPiece: true,
             pieceColor:  this.nextPiece.getColor()
         })
+
         this.nextPiece = new Piece(this.playerNextPosition, {
             isPlayerPiece: true,
             pieceColor:  rndNumber(0, 6),

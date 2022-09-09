@@ -1,8 +1,8 @@
 import { debugMap } from '../debugMap';
 import { BALL_TYPES } from '../game.interfaces';
-import { gameScene, grid, invisiblePiecesGroup } from '../Scenes/GameScene';
+import { gameScene, grid, invisiblePiecesGroup, player } from '../Scenes/GameScene';
 import { GRID_LENGTH, HALF_SCREEN, PIECE, WALL } from '../Utils/gameValues'
-import { calculateClosestInvisiblePiece, makeAnimation, rndNumber } from '../Utils/utils';
+import { calculateClosestInvisiblePiece, convertAxisToArrayPosition, makeAnimation, rndNumber } from '../Utils/utils';
 import Piece from './Piece';
 
 export default class Grid {
@@ -21,7 +21,7 @@ export default class Grid {
             const xLenght = debug ? debugMap[i].length : maxGridLenth
             for(let j = 0; j < xLenght; j++) {
                 const pieceColor = debug ? debugMap[i][j] : rndNumber(0, 6);
-                this.addPieceToGrid(i, j, pieceColor)
+                this.createAndAddNewPieceToGrid(i, j, pieceColor)
             }
         }
 
@@ -31,14 +31,14 @@ export default class Grid {
     private fillRestWithEmpties() {
         for(let i = this.currentGrid.length; i < GRID_LENGTH.MAX_HEIGHT; i++) {
             this.currentGrid[i] = []
-            // const maxGridLenth = GRID_LENGTH.X - (i % 2 === 0 ? 0 : 1);
-            for(let j = 0; j < GRID_LENGTH.X; j++) {
-                this.addPieceToGrid(i, j, 7)
+            const maxGridLenth = GRID_LENGTH.X - (i % 2 === 0 ? 0 : 1);
+            for(let j = 0; j < maxGridLenth; j++) {
+                this.createAndAddNewPieceToGrid(i, j, 7)
             }
         }
     }
 
-    private addPieceToGrid(i: number, j: number, pieceType: BALL_TYPES = null) {
+    private createAndAddNewPieceToGrid(i: number, j: number, pieceType: BALL_TYPES = null) {
         const x = this.calculateXPosition(i, j);
         const y = this.calculateYPosition(i);
 
@@ -66,21 +66,43 @@ export default class Grid {
         return y;
     }
 
-    public addPlayerPieceToGrid(playerPiece: Piece, gridPiece: Piece, callback) {
+    public addPlayerPieceToGrid(playerPiece: Piece, gridPieces: Piece, callback) {
+        const self = this;
         playerPiece.changeForGridPiece();
-        let invisiblePiecesArr = [];
-        const currentPieceCollider = gameScene.physics.add.overlap(playerPiece, 
-            invisiblePiecesGroup, (playerPiece, gridPiece) => {
-                invisiblePiecesArr.push(gridPiece as Piece);
-                gameScene.physics.world.removeCollider(currentPieceCollider);
-        });
+        const invisiblePiecesArr = this.overlapInvisiblePieces(playerPiece);
         // A delay is needed to collect every overlap, since the overlap method fires a
         // callback for every time a event is found
         setTimeout(() => {
             const selectedInvisiblePiece = calculateClosestInvisiblePiece(playerPiece, invisiblePiecesArr);
-            playerPiece.move({ x: selectedInvisiblePiece.x, y: selectedInvisiblePiece.y }, 10, null)
+            //TODO HEREEEE
+            playerPiece.move(selectedInvisiblePiece, 10, null);
+            self.addNewPieceToGridAndRemoveInvisible(selectedInvisiblePiece, playerPiece, selectedInvisiblePiece);
             callback();
         }, 50)
+    }
 
+    private overlapInvisiblePieces(playerPiece: Piece) {
+        let invisiblePiecesArr = [];
+        const currentPieceCollider = gameScene.physics.add.overlap(playerPiece,
+            invisiblePiecesGroup, (playerPiece, invisibleGridPieces) => {
+                invisiblePiecesArr.push(invisibleGridPieces as Piece);
+            });
+    
+        gameScene.physics.world.removeCollider(currentPieceCollider);
+        return invisiblePiecesArr;
+    }
+
+    // TODO acho que está a passar demasiadas vezes no timeout onde estou a chamar este metodo
+    // tambem estou a ter um erro quando envio demasiadas pieces no level y 
+    private addNewPieceToGridAndRemoveInvisible({ x, y }, piece: Piece, selectedInvisiblePiece: Piece) {
+        const {i, j} = convertAxisToArrayPosition({ x, y });
+        this.currentGrid[i][j] = piece;
+
+        invisiblePiecesGroup.getChildren().forEach((child) => {
+            const currentChild = child as Piece;
+            if(currentChild.getId() === selectedInvisiblePiece.getId()) {
+                invisiblePiecesGroup.remove(currentChild)
+            }
+        })
     }
 }
