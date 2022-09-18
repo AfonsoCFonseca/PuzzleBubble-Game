@@ -76,19 +76,21 @@ export default class Player {
 
     public shootPiece() {
         if (this.isShooting === false) {
-            this.currentPiece.shoot(this.getSecondaryAimLines() , (collidedWithGrid: boolean) => {
-                const timeBeforeDelete = collidedWithGrid ? 0 : TIME_BEFORE_DELETE_PIECE;
-                setTimeout(() => {
-                    if (collidedWithGrid === false ) this.erasePiece();
-                    this.generatePiece();
-                    // this.currentPiece.eraseDebugString();
-                }, timeBeforeDelete);
-            })
+            this.currentPiece.shoot(this.getSecondaryAimLines());
             this.isShooting = true;
         }
     }
 
-    public erasePiece() {
+    public endShootingProcess(collidedWithGrid: boolean) {
+        const timeBeforeDelete = collidedWithGrid ? 0 : TIME_BEFORE_DELETE_PIECE;
+        setTimeout(() => {
+            if (collidedWithGrid === false) this.resetCurrentPiece();
+            this.currentPiece.eraseDebugString();
+            this.generatePiece();
+        }, timeBeforeDelete);
+    }
+
+    public resetCurrentPiece() {
         this.currentPiece.destroy();
         this.currentPiece = null;
     }
@@ -99,6 +101,7 @@ export default class Player {
             pieceColor:  this.nextPiece.getColor()
         })
 
+        this.nextPiece.eraseDebugString();
         this.nextPiece = new Piece(this.playerNextPosition, {
             isPlayerPiece: true,
             pieceColor:  rndNumber(0, 6),

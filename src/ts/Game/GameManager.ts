@@ -96,7 +96,7 @@ export default class GameManager {
                 player.removeSecondaryAimLine(counter);
             }
             counter++;
-        } while(shouldRepeat)
+        } while (shouldRepeat)
     }
 
     private createAuxLine(currentPoint, previousPoint) {

@@ -6,8 +6,6 @@ import { applyPythagoreanTheorem, getBallType, makeAnimation, rndNumber } from "
 export default class Piece extends Phaser.GameObjects.Sprite {
     body: Phaser.Physics.Arcade.Body;
 
-    private shootingCallback: Function;
-    private shootingCallback1: Function;
     private color: BALL_COLORS;
     private currentAnimation = null;
     private isPlayerPiece: boolean;
@@ -46,18 +44,25 @@ export default class Piece extends Phaser.GameObjects.Sprite {
     }
 
     public eraseDebugString() {
-        if( this.isDebug ) {
+        if (this.isDebug) {
             this.textId.destroy();
         }
     }
 
-    public shoot(secondAimLines: Phaser.Geom.Line[], callback?: Function) {
-        this.shootingCallback = callback;
+    public updateDebugString({ x, y }: Position) {
+        if (this.isDebug) {
+            x -= 25;
+            y -= 25;
+            if(this.textId.active === false) this.textId = gameScene.add.text(x, y, this.id.substring(0,4), {fontSize: '28px'}).setDepth(2);
+            else this.textId.setPosition(x, y);
+        }
+    }
+
+    public shoot(secondAimLines: Phaser.Geom.Line[]) {
         const destinyPoint = secondAimLines[0]?.getPointA() || player.getAimLine().getPointB();
         const animSpeed = this.calculateSpeedToDistance(destinyPoint);
         const secondaryLines = [...player.getSecondaryAimLines()];
         this.shootingMove(destinyPoint, 0, animSpeed, secondaryLines);
-
     }
 
     public shootingMove( {x, y}, nextPos, animSpeed, secondaryLines) {
@@ -68,27 +73,20 @@ export default class Piece extends Phaser.GameObjects.Sprite {
                 const animSpeed = this.calculateSpeedToDistance(nextLine.getPointB());
                 this.shootingMove(nextLine.getPointB(), nextPos, animSpeed, secondaryLines)
             } else {
-                this.shootingCallback(false);
+                player.endShootingProcess(false);
             }
         })
     }
 
     public move({x,y}, animSpeed, callback) {
-        // if(callback) this.shootingCallback = callback;
         this.currentAnimation = makeAnimation(this, { x, y }, animSpeed, callback)
-        // callback1();
-    }
-
-    public changeForGridPiece() {
-        this.stopMovement();
-        piecesGroup.add(this);
-        this.body.immovable = true;
     }
 
     public stopMovement() {
+        this.body.immovable = true;
         if(this.currentAnimation) {
             this.currentAnimation.stop()
-            this.shootingCallback(true);
+            player.endShootingProcess(true);
         } 
     }
     

@@ -123,3 +123,8 @@ export function convertAxisToArrayPosition({x, y}: {x: number, y: number}){
         j: Math.floor(x / PIECE.WIDTH) - 1
     }
 }
+
+export function idAlreadyExistInArray(id, arr: Piece[]): boolean {
+    const found = arr.find(element => element.getId() === id);
+    return found ? true : false;
+}

@@ -1,8 +1,8 @@
 import { debugMap } from '../debugMap';
-import { BALL_TYPES } from '../game.interfaces';
-import { gameScene, grid, invisiblePiecesGroup, player } from '../Scenes/GameScene';
+import { BALL_TYPES, Position } from '../game.interfaces';
+import { gameScene, grid, invisiblePiecesGroup, piecesGroup, player } from '../Scenes/GameScene';
 import { GRID_LENGTH, HALF_SCREEN, PIECE, WALL } from '../Utils/gameValues'
-import { calculateClosestInvisiblePiece, convertAxisToArrayPosition, makeAnimation, rndNumber } from '../Utils/utils';
+import { calculateClosestInvisiblePiece, convertAxisToArrayPosition, idAlreadyExistInArray, makeAnimation, rndNumber } from '../Utils/utils';
 import Piece from './Piece';
 
 export default class Grid {
@@ -10,7 +10,7 @@ export default class Grid {
     currentGrid: Piece[][] = [];
 
     constructor() {
-        this.buildGrid(false);
+        this.buildGrid(true);
     }
 
     private buildGrid(debug: boolean = false) {
@@ -68,15 +68,16 @@ export default class Grid {
 
     public addPlayerPieceToGrid(playerPiece: Piece, gridPieces: Piece, callback) {
         const self = this;
-        playerPiece.changeForGridPiece();
+        playerPiece.stopMovement();
         const invisiblePiecesArr = this.overlapInvisiblePieces(playerPiece);
         // A delay is needed to collect every overlap, since the overlap method fires a
         // callback for every time a event is found
         setTimeout(() => {
             const selectedInvisiblePiece = calculateClosestInvisiblePiece(playerPiece, invisiblePiecesArr);
-            //TODO HEREEEE
             playerPiece.move(selectedInvisiblePiece, 10, null);
-            self.addNewPieceToGridAndRemoveInvisible(selectedInvisiblePiece, playerPiece, selectedInvisiblePiece);
+            self.removeInvisiblePiece(selectedInvisiblePiece);
+            self.addNewPieceToGrid(selectedInvisiblePiece, playerPiece);
+            self.checkForMatch(selectedInvisiblePiece, playerPiece);
             callback();
         }, 50)
     }
@@ -92,17 +93,71 @@ export default class Grid {
         return invisiblePiecesArr;
     }
 
-    // TODO acho que está a passar demasiadas vezes no timeout onde estou a chamar este metodo
-    // tambem estou a ter um erro quando envio demasiadas pieces no level y 
-    private addNewPieceToGridAndRemoveInvisible({ x, y }, piece: Piece, selectedInvisiblePiece: Piece) {
+    private addNewPieceToGrid({ x, y }, piece: Piece) {
         const {i, j} = convertAxisToArrayPosition({ x, y });
         this.currentGrid[i][j] = piece;
+        piecesGroup.add(piece);
+        piece.updateDebugString({ x, y });
+    }
 
+    private removeInvisiblePiece( selectedInvisiblePiece: Piece) {
         invisiblePiecesGroup.getChildren().forEach((child) => {
             const currentChild = child as Piece;
             if(currentChild.getId() === selectedInvisiblePiece.getId()) {
                 invisiblePiecesGroup.remove(currentChild)
+                currentChild.eraseDebugString();
+                currentChild.destroy();
             }
         })
+    }
+
+    private checkForMatch({x, y}: Position, currentPiece: Piece) {
+        let isMatch: boolean;
+        let currentMatchingPiece = currentPiece;
+        let currentX = x;
+        let currentY = y;
+        let piecesMatched: Piece[] = [];
+
+        do {
+            isMatch = false;
+            const {i, j} = convertAxisToArrayPosition({ x: currentX, y: currentY });
+            let adjPieces = this.getAdjacentPieces(i,j);
+            
+            adjPieces.forEach(adjPiece => {
+                if(adjPiece.getColor() === currentMatchingPiece.getColor() && 
+                    !idAlreadyExistInArray(adjPiece.getId(), piecesMatched)) {
+                        isMatch = true;
+                        piecesMatched.push(adjPiece);
+                        currentMatchingPiece = adjPiece;
+                        currentX = currentMatchingPiece.x;
+                        currentY = currentMatchingPiece.y;
+                }
+            })
+        } while(isMatch);
+
+        console.log(piecesMatched)
+    }
+
+    private getAdjacentPieces(i: number, j: number): Piece[] {
+        let adjacentArray: Piece[] = []
+        //calculate horizontal
+        if (j - 1 >= 0) adjacentArray.push(this.currentGrid[i][j - 1])
+        const maxGridLenth = GRID_LENGTH.X - (i % 2 === 0 ? 0 : 1);
+        if (j + 1 < maxGridLenth) adjacentArray.push(this.currentGrid[i][j + 1])
+
+        //calculate vertical
+        if (i - 1 >= 0) {
+            const x = i % 2 === 0 ? j : j + 1
+            if (this.currentGrid[i - 1][x - 1]) {
+                adjacentArray.push(this.currentGrid[i - 1][x - 1])
+            }
+            if (this.currentGrid[i - 1][x]) {
+                adjacentArray.push(this.currentGrid[i - 1][x])
+            }
+        }
+
+        //TODO missing verical down
+
+        return adjacentArray;
     }
 }

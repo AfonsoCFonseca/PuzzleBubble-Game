@@ -1,0 +1,5 @@
+vertical down validation
+after checkForMatch, the bubbles should pop
+bug - player pieces sometimes change when shooting
+bug - debug map doesnt show the total pieces matching
+bug - double call when shooting

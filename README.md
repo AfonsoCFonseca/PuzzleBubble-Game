@@ -22,6 +22,7 @@ The Piece instance represent each individual piece drawn in the map. Also makes 
 The Grid is a singleton class created for managing all the pieces besides the player piece. It has a 2 dimensions array of Piece representing the group of pieces displayed on the map, where the x changes depending on the y position, creating a proper map pattern.
 The creation is made by a randomizer of ints to pick a color when instantiating. 
 The Grid is also responsible for storing invisible Pieces in the array, to represent the empty space where the player piece will fit once shooted by the player. This class also converts the player pieces to grid piece
+This class is also responsible for checking for matches when the player shots a new piece
 
 ---------------------------------------------------------------
 # Development
@@ -35,7 +36,9 @@ Created a menu scene and the logic between scene transistion. After, added the g
 
 After some fine-tuning and exception handling of the player movement and shooting, I started developing the map grid as a class and storing a 2D array of pieces for storing every piece on the map. Also added the randomizer of the different types of pieces in a sprite and stored it as an enum, using it on the Piece class.
 
-The piece collision was the next phase to tackle. Added the grid pieces to a Phaser.group and listen to a collision between the group and the player pieces. If a collision is detected, the player piece animation stops and a new piece is generated. When the animation stops, another overlap collision is created between the player piece and the invisible pieces (explained in the Grid class) to understand what are the pieces that overlaps the player's in terms of space, when found a calculation is made to understand the nearest one and a movement animation is played to that same spot. When this happen the player piece is converted to a grid piece
+The piece collision was the next phase to tackle. Added the grid pieces to a Phaser.group and listen to a collision between the group and the player pieces. If a collision is detected, the player piece animation stops and a new piece is generated. When the animation stops, another overlap collision is created between the player piece and the invisible pieces (explained in the Grid class) to understand what are the pieces that overlaps the player's in terms of space, when found a calculation is made to understand the nearest one and a movement animation is played to that same spot. When this happen the player piece is converted to a grid piece. After this steps, the system, after, checks for new matches in the Grid class, starting in the last shot piece, validating if the adjacent ones are the same color, if yes, the process repeats itself but now with that current matched piece. 
+
+If more than 2 pieces match, a new logic takes place, starting with an animation of the pieces falling down and the removal of that currentPieces from the array of gridPieces. The grid is then updated with new invisible slots to where once were the matching pieces placed
 
 ---------------------------------------------------------------
 # Sketches & Evolution
