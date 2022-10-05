@@ -84,8 +84,8 @@ export default class Player {
     public endShootingProcess(collidedWithGrid: boolean) {
         const timeBeforeDelete = collidedWithGrid ? 0 : TIME_BEFORE_DELETE_PIECE;
         setTimeout(() => {
-            if (collidedWithGrid === false) this.resetCurrentPiece();
             this.currentPiece.eraseDebugString();
+            if (collidedWithGrid === false) this.resetCurrentPiece();
             this.generatePiece();
         }, timeBeforeDelete);
     }

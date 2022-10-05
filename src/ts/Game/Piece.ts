@@ -23,7 +23,7 @@ export default class Piece extends Phaser.GameObjects.Sprite {
         this.setCollisionSpecs()
 
         if(!this.isPlayerPiece && this.color !== BALL_COLORS.INVISIBLE) piecesGroup.add(this);
-        if(this.color === BALL_COLORS.INVISIBLE) invisiblePiecesGroup.add(this);
+        if(this.isEmpty()) invisiblePiecesGroup.add(this);
 
         if( this.isDebug ) this.textId = gameScene.add.text(x - 25, y - 15, this.id.substring(0,4), {fontSize: '28px'}).setDepth(2);
     }
@@ -41,6 +41,27 @@ export default class Piece extends Phaser.GameObjects.Sprite {
 
     public getColor(): BALL_COLORS {
         return this.color;
+    }
+
+    public isEmpty(): boolean {
+        return this.color === BALL_COLORS.INVISIBLE;
+    }
+
+    public switchForInvisible() {
+        this.fellDown();
+        this.setFrame(BALL_COLORS.INVISIBLE)
+        this.color = BALL_COLORS.INVISIBLE;
+        invisiblePiecesGroup.add(this);
+        const pieceInGroup = piecesGroup.getChildren().find((currentPiece: Piece) => 
+            currentPiece.getId() === this.id)
+        piecesGroup.remove(pieceInGroup);
+    }
+
+    private fellDown() {
+        var image = gameScene.add.image(this.x, this.y, 'bubbles', this.color);
+        image.setTint(0x808080)
+        makeAnimation(image, { x: image.x, y: BACKGROUND.HEIGHT+ image.y }, 500, () => 
+            image.destroy());
     }
 
     public eraseDebugString() {

@@ -77,7 +77,8 @@ export default class Grid {
             playerPiece.move(selectedInvisiblePiece, 10, null);
             self.removeInvisiblePiece(selectedInvisiblePiece);
             self.addNewPieceToGrid(selectedInvisiblePiece, playerPiece);
-            self.checkForMatch(selectedInvisiblePiece, playerPiece);
+            const matchedPieces = self.checkForMatch(selectedInvisiblePiece, playerPiece);
+            self.popMatches(matchedPieces);
             callback();
         }, 50)
     }
@@ -111,31 +112,36 @@ export default class Grid {
         })
     }
 
-    private checkForMatch({x, y}: Position, currentPiece: Piece) {
-        let isMatch: boolean;
-        let currentMatchingPiece = currentPiece;
+    private checkForMatch({x, y}: Position, currentPiece: Piece): Piece[] {
         let currentX = x;
         let currentY = y;
-        let piecesMatched: Piece[] = [];
+        let piecesMatched: Piece[] = [currentPiece];
+        const MATCH_COLOR = currentPiece.getColor();
+
+        let colorArr = [];
+        let lastOne: boolean;
 
         do {
-            isMatch = false;
+            lastOne = false;
             const {i, j} = convertAxisToArrayPosition({ x: currentX, y: currentY });
             let adjPieces = this.getAdjacentPieces(i,j);
-            
+
             adjPieces.forEach(adjPiece => {
-                if(adjPiece.getColor() === currentMatchingPiece.getColor() && 
-                    !idAlreadyExistInArray(adjPiece.getId(), piecesMatched)) {
-                        isMatch = true;
-                        piecesMatched.push(adjPiece);
-                        currentMatchingPiece = adjPiece;
-                        currentX = currentMatchingPiece.x;
-                        currentY = currentMatchingPiece.y;
+                if(adjPiece.getColor() === MATCH_COLOR && !idAlreadyExistInArray(adjPiece.getId(), piecesMatched)) {
+                    piecesMatched.push(adjPiece);
+                    colorArr.push(adjPiece);
                 }
             })
-        } while(isMatch);
 
-        console.log(piecesMatched)
+            if(colorArr.length > 0) {
+                currentX = colorArr[colorArr.length - 1].x;
+                currentY = colorArr[colorArr.length - 1].y;
+                colorArr.pop()
+                if(colorArr.length === 0) lastOne = true;
+            }
+        } while(colorArr.length || lastOne === true)
+
+        return piecesMatched;
     }
 
     private getAdjacentPieces(i: number, j: number): Piece[] {
@@ -146,18 +152,40 @@ export default class Grid {
         if (j + 1 < maxGridLenth) adjacentArray.push(this.currentGrid[i][j + 1])
 
         //calculate vertical
-        if (i - 1 >= 0) {
-            const x = i % 2 === 0 ? j : j + 1
-            if (this.currentGrid[i - 1][x - 1]) {
-                adjacentArray.push(this.currentGrid[i - 1][x - 1])
-            }
-            if (this.currentGrid[i - 1][x]) {
-                adjacentArray.push(this.currentGrid[i - 1][x])
-            }
-        }
+        if (i - 1 >= 0)
+            adjacentArray = [...adjacentArray, ...this.matchVerticalPieces('UP', i, j)];
 
-        //TODO missing verical down
+        if(i + 1 <= GRID_LENGTH.MAX_HEIGHT)
+            adjacentArray = [...adjacentArray, ...this.matchVerticalPieces('DOWN', i, j)];
 
         return adjacentArray;
+    }
+
+    private matchVerticalPieces(state: 'UP' | 'DOWN', i: number, j: number) {
+        const currentAdjVerticalArr = [];
+        const x = i % 2 === 0 ? j : j + 1
+        const y = state === 'DOWN' ? i + 1 : i - 1;
+        if (this.currentGrid[y][x - 1] && !this.currentGrid[y][x - 1].isEmpty()) {
+            currentAdjVerticalArr.push(this.currentGrid[y][x - 1])
+        }
+        if (this.currentGrid[y][x] && !this.currentGrid[y][x].isEmpty()) {
+            currentAdjVerticalArr.push(this.currentGrid[y][x])
+        }
+
+        return currentAdjVerticalArr;
+    }
+
+    private popMatches(matchedPieces: Piece[]) {
+        if( matchedPieces.length >= 3) {
+            matchedPieces.forEach(matchedPiece => {
+                this.currentGrid.forEach((line, indexLine) => {
+                    const index = line.findIndex(piece => piece.getId() === matchedPiece.getId());
+                    if(index >= 0) {
+                        this.currentGrid[indexLine][index].switchForInvisible();
+                    }
+                });
+            });
+            console.log(this.currentGrid);
+        }
     }
 }

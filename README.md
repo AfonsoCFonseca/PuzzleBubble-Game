@@ -38,7 +38,7 @@ After some fine-tuning and exception handling of the player movement and shootin
 
 The piece collision was the next phase to tackle. Added the grid pieces to a Phaser.group and listen to a collision between the group and the player pieces. If a collision is detected, the player piece animation stops and a new piece is generated. When the animation stops, another overlap collision is created between the player piece and the invisible pieces (explained in the Grid class) to understand what are the pieces that overlaps the player's in terms of space, when found a calculation is made to understand the nearest one and a movement animation is played to that same spot. When this happen the player piece is converted to a grid piece. After this steps, the system, after, checks for new matches in the Grid class, starting in the last shot piece, validating if the adjacent ones are the same color, if yes, the process repeats itself but now with that current matched piece. 
 
-If more than 2 pieces match, a new logic takes place, starting with an animation of the pieces falling down and the removal of that currentPieces from the array of gridPieces. The grid is then updated with new invisible slots to where once were the matching pieces placed
+If more than 2 pieces match, the system starts the process of those pieces falling. In fact, the pieces stay in the same place and are converted into invisible pieces, a new image is created with the same colour (with a grey setTint) in the same positions and it's then animated to move down on the screen until it's destroyed when reaches the end of the screen
 
 ---------------------------------------------------------------
 # Sketches & Evolution
