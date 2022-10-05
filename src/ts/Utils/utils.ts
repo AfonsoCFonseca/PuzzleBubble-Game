@@ -128,3 +128,14 @@ export function idAlreadyExistInArray(id, arr: Piece[]): boolean {
     const found = arr.find(element => element.getId() === id);
     return found ? true : false;
 }
+
+export function removeDuplicates(pieceArr: Piece[]) {
+    const uniqueArray = pieceArr.filter((value, index) => {
+        const _value = JSON.stringify(value);
+        return index === pieceArr.findIndex(obj => {
+            return JSON.stringify(obj) === _value;
+        });
+    });
+
+    return uniqueArray;
+}

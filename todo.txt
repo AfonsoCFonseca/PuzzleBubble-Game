@@ -1,5 +1,4 @@
-Bug - shooting pieces out of the map doesnt create collide to the next one
-Bug - shooting pieces some times change before launching
+Bug - Sometimes matching doesn't happen. Check addPlayerPieceToGrid(), around here removeInvisiblePiece()
 Game Over trigger
 isolated pieces should fall too
 Score system

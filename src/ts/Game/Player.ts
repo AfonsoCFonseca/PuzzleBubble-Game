@@ -1,5 +1,5 @@
 import { BACKGROUND, HALF_SCREEN, PIECE, RAY_SPEED, TIME_BEFORE_DELETE_PIECE } from "../Utils/gameValues";
-import GameManager, { gameManager } from "./GameManager";
+import GameManager from "./GameManager";
 import GameScene, { aimArrow, gameScene } from "../Scenes/GameScene";
 import Piece from "./Piece";
 import { isMovementLimit, rndNumber } from "../Utils/utils";
@@ -87,6 +87,7 @@ export default class Player {
             this.currentPiece.eraseDebugString();
             if (collidedWithGrid === false) this.resetCurrentPiece();
             this.generatePiece();
+            if (collidedWithGrid === false) gameScene.refreshCollision();
         }, timeBeforeDelete);
     }
 

@@ -1,8 +1,8 @@
 import { debugMap } from '../debugMap';
 import { BALL_TYPES, Position } from '../game.interfaces';
-import { gameScene, grid, invisiblePiecesGroup, piecesGroup, player } from '../Scenes/GameScene';
+import { gameScene, invisiblePiecesGroup, piecesGroup, player } from '../Scenes/GameScene';
 import { GRID_LENGTH, HALF_SCREEN, PIECE, WALL } from '../Utils/gameValues'
-import { calculateClosestInvisiblePiece, convertAxisToArrayPosition, idAlreadyExistInArray, makeAnimation, rndNumber } from '../Utils/utils';
+import { calculateClosestInvisiblePiece, convertAxisToArrayPosition, idAlreadyExistInArray, removeDuplicates, rndNumber } from '../Utils/utils';
 import Piece from './Piece';
 
 export default class Grid {
@@ -10,7 +10,7 @@ export default class Grid {
     currentGrid: Piece[][] = [];
 
     constructor() {
-        this.buildGrid(true);
+        this.buildGrid(false);
     }
 
     private buildGrid(debug: boolean = false) {
@@ -69,10 +69,11 @@ export default class Grid {
     public addPlayerPieceToGrid(playerPiece: Piece, gridPieces: Piece, callback) {
         const self = this;
         playerPiece.stopMovement();
-        const invisiblePiecesArr = this.overlapInvisiblePieces(playerPiece);
+        let invisiblePiecesArr = this.overlapInvisiblePieces(playerPiece);
         // A delay is needed to collect every overlap, since the overlap method fires a
         // callback for every time a event is found
         setTimeout(() => {
+            invisiblePiecesArr = removeDuplicates(invisiblePiecesArr);
             const selectedInvisiblePiece = calculateClosestInvisiblePiece(playerPiece, invisiblePiecesArr);
             playerPiece.move(selectedInvisiblePiece, 10, null);
             self.removeInvisiblePiece(selectedInvisiblePiece);
@@ -89,9 +90,8 @@ export default class Grid {
             invisiblePiecesGroup, (playerPiece, invisibleGridPieces) => {
                 invisiblePiecesArr.push(invisibleGridPieces as Piece);
             });
-    
         gameScene.physics.world.removeCollider(currentPieceCollider);
-        return invisiblePiecesArr;
+        return invisiblePiecesArr
     }
 
     private addNewPieceToGrid({ x, y }, piece: Piece) {
@@ -185,7 +185,6 @@ export default class Grid {
                     }
                 });
             });
-            console.log(this.currentGrid);
         }
     }
 }

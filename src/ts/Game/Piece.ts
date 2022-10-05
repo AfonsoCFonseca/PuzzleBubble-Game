@@ -20,7 +20,7 @@ export default class Piece extends Phaser.GameObjects.Sprite {
         this.color = pieceColor || getBallType(pieceColor);
         this.id = this.generateNewId();
 
-        this.setCollisionSpecs()
+        this.setCollisionSpecs();
 
         if(!this.isPlayerPiece && this.color !== BALL_COLORS.INVISIBLE) piecesGroup.add(this);
         if(this.isEmpty()) invisiblePiecesGroup.add(this);

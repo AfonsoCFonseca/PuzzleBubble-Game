@@ -7,7 +7,7 @@ import { ARROW_IMAGE, BACKGROUND, GAMEOVER_BOARD, HALF_SCREEN, PIECE, WALL } fro
 import { BALL_TYPES, GAME_STATE, SIDE } from '../game.interfaces';
 import Grid from '../Game/Grid';
 
-export let gameScene: Phaser.Scene;
+export let gameScene;
 
 export let player: Player;
 export let grid: Grid;
@@ -133,10 +133,13 @@ export default class GameScene extends Phaser.Scene {
 
     public pieceCollision() {
         const self = this;
-
+        let control = true;
+        // collider trigger for every in contact piece, used the variable control to make
+        //sure the addPlayerPieceToGrid is only called for the first contacted piece
         this.currentPieceCollider = this.physics.add.collider(player.getCurrentPiece(), 
             piecesGroup, (playerPiece, gridPiece) => {
-                if(player.getCurrentPiece() === playerPiece) {
+                if (player.getCurrentPiece() === playerPiece && control ) {
+                    control = false;
                     grid.addPlayerPieceToGrid(playerPiece as Piece, gridPiece as Piece, () => {
                         self.refreshCollision();
                     });
