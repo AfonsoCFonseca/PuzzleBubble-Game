@@ -4,7 +4,7 @@ import { GAME_STATE, SIDE } from '../game.interfaces';
 import GameScene, { player } from '../Scenes/GameScene';
 
 import { BACKGROUND, GREEN_COLOR, HALF_SCREEN, RED_COLOR, WALL } from '../Utils/gameValues';
-import { drawLine, getPointFromWall, isOriginalPoint } from '../Utils/utils';
+import { convertAxisToArrayPosition, drawLine, getPointFromWall, isOriginalPoint } from '../Utils/utils';
 
 export let myGraphics;
 
@@ -32,6 +32,12 @@ export default class GameManager {
         if (this.currentGameState === GAME_STATE.RUNNING) {
             this.renderGeoms();
         }
+    }
+
+    public isGameOver(y): boolean {
+        let { i } = convertAxisToArrayPosition({x: 0, y})
+        if (i === 12 ) return true;
+        return false;
     }
 
     public getCurrentGameState(): GAME_STATE {

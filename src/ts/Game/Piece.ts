@@ -1,7 +1,7 @@
 import { BALL_TYPES as BALL_COLORS, PieceConfigs, Position } from "../game.interfaces";
 import { gameScene, invisiblePiecesGroup, piecesGroup, player } from "../Scenes/GameScene"
-import { AVERAGE_LINE_SIZE, BACKGROUND, BALL_SPEED, HALF_SCREEN, PIECE } from "../Utils/gameValues";
-import { applyPythagoreanTheorem, getBallType, makeAnimation, rndNumber } from "../Utils/utils";
+import { AVERAGE_LINE_SIZE, BACKGROUND, BALL_SPEED, PIECE, TIME_TO_FALL } from "../Utils/gameValues";
+import { applyPythagoreanTheorem, getBallType, makeAnimation } from "../Utils/utils";
 
 export default class Piece extends Phaser.GameObjects.Sprite {
     body: Phaser.Physics.Arcade.Body;
@@ -12,6 +12,8 @@ export default class Piece extends Phaser.GameObjects.Sprite {
     private id: string;
     private isDebug = true;
     private textId:  Phaser.GameObjects.Text;
+    private lastInvisiblePieceOverlaped = [];
+    private MAX_INVISIBLE_PIECE_ARRAY = 3;
     
     constructor({ x, y }: Position, { isPlayerPiece, pieceColor, isNextBall }: PieceConfigs) {
         super(gameScene, x, y, 'bubbles', pieceColor)
@@ -33,6 +35,14 @@ export default class Piece extends Phaser.GameObjects.Sprite {
         if (this.isPlayerPiece === false) this.body.immovable = true;
         this.body.setCircle(PIECE.WIDTH/2);
         gameScene.add.existing(this).setDepth(1).setOrigin(0.5,0.5)
+
+        gameScene.physics.add.overlap(this,
+            invisiblePiecesGroup, (playerPiece, invisibleGridPieces) => {
+                this.lastInvisiblePieceOverlaped.unshift(invisibleGridPieces)
+                if(this.lastInvisiblePieceOverlaped.length > this.MAX_INVISIBLE_PIECE_ARRAY) {
+                    this.lastInvisiblePieceOverlaped.pop();
+                }
+        })
     }
 
     public getId(): string {
@@ -49,7 +59,6 @@ export default class Piece extends Phaser.GameObjects.Sprite {
 
     public switchForInvisible() {
         this.fellDown();
-        this.setFrame(BALL_COLORS.INVISIBLE)
         this.color = BALL_COLORS.INVISIBLE;
         invisiblePiecesGroup.add(this);
         const pieceInGroup = piecesGroup.getChildren().find((currentPiece: Piece) => 
@@ -58,10 +67,18 @@ export default class Piece extends Phaser.GameObjects.Sprite {
     }
 
     private fellDown() {
-        var image = gameScene.add.image(this.x, this.y, 'bubbles', this.color);
+        const image = this.makePieceGrey();
+        setTimeout(() => {
+            makeAnimation(image, { x: image.x, y: BACKGROUND.HEIGHT + image.y }, 600, () => 
+                image.destroy());
+        }, TIME_TO_FALL)
+    }
+
+    public makePieceGrey() {
+        this.setFrame(BALL_COLORS.INVISIBLE)
+        const image = gameScene.add.image(this.x, this.y, 'bubbles', this.color);
         image.setTint(0x808080)
-        makeAnimation(image, { x: image.x, y: BACKGROUND.HEIGHT+ image.y }, 500, () => 
-            image.destroy());
+        return image;
     }
 
     public eraseDebugString() {
@@ -120,5 +137,9 @@ export default class Piece extends Phaser.GameObjects.Sprite {
 
     private generateNewId() {
         return (performance.now().toString(36)+Math.random().toString(36)).replace(/\./g,"");
+    }
+
+    public getLastOverlapedPieces(): Piece[] {
+        return this.lastInvisiblePieceOverlaped;
     }
 }

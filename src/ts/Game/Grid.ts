@@ -1,8 +1,9 @@
 import { debugMap } from '../debugMap';
 import { BALL_TYPES, Position } from '../game.interfaces';
-import { gameScene, invisiblePiecesGroup, piecesGroup, player } from '../Scenes/GameScene';
+import { gameScene, invisiblePiecesGroup, piecesGroup } from '../Scenes/GameScene';
 import { GRID_LENGTH, HALF_SCREEN, PIECE, WALL } from '../Utils/gameValues'
-import { calculateClosestInvisiblePiece, convertAxisToArrayPosition, idAlreadyExistInArray, removeDuplicates, rndNumber } from '../Utils/utils';
+import { calculateClosestInvisiblePiece, convertAxisToArrayPosition, getPointFromWall, idAlreadyExistInArray, removeDuplicates, rndNumber } from '../Utils/utils';
+import { gameManager } from './GameManager';
 import Piece from './Piece';
 
 export default class Grid {
@@ -60,27 +61,39 @@ export default class Grid {
     }
 
     private calculateYPosition(i: number): number {
-        const closeHeightMargin = 15; // margin to make diagonal height touching
-        let y = (PIECE.HEIGHT - closeHeightMargin) * i
+        // margin to make diagonal height touching
+        let y = (PIECE.HEIGHT - PIECE.HEIGHT_CLOSE_MARGIN) * i
         y += PIECE.HEIGHT / 2 + WALL.TOP_HEIGHT
         return y;
     }
 
-    public addPlayerPieceToGrid(playerPiece: Piece, gridPieces: Piece, callback) {
+    public addPlayerPieceToGrid(playerPiece: Piece, callback) {
         const self = this;
         playerPiece.stopMovement();
         let invisiblePiecesArr = this.overlapInvisiblePieces(playerPiece);
         // A delay is needed to collect every overlap, since the overlap method fires a
         // callback for every time a event is found
         setTimeout(() => {
+            if(invisiblePiecesArr.length <= 0) invisiblePiecesArr = playerPiece.getLastOverlapedPieces();
             invisiblePiecesArr = removeDuplicates(invisiblePiecesArr);
             const selectedInvisiblePiece = calculateClosestInvisiblePiece(playerPiece, invisiblePiecesArr);
-            playerPiece.move(selectedInvisiblePiece, 10, null);
-            self.removeInvisiblePiece(selectedInvisiblePiece);
-            self.addNewPieceToGrid(selectedInvisiblePiece, playerPiece);
-            const matchedPieces = self.checkForMatch(selectedInvisiblePiece, playerPiece);
-            self.popMatches(matchedPieces);
-            callback();
+            if(!gameManager.isGameOver(selectedInvisiblePiece.y)) {
+                playerPiece.move(selectedInvisiblePiece, 10, () => {
+                    self.removeInvisiblePiece(selectedInvisiblePiece);
+                    self.addNewPieceToGrid(selectedInvisiblePiece, playerPiece);
+                    const matchedPieces = self.checkForMatch(selectedInvisiblePiece, playerPiece);
+                    self.popMatches(matchedPieces);
+                    callback();
+                });
+            } else {
+                this.currentGrid.forEach(lineOfPieces => {
+                    lineOfPieces.forEach(piece => {
+                        piece.makePieceGrey()
+                    })
+                })
+                playerPiece.makePieceGrey();
+            }
+            
         }, 50)
     }
 

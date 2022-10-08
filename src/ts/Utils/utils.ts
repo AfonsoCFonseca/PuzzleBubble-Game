@@ -113,13 +113,9 @@ export function calculateClosestInvisiblePiece(playerPiece: Piece,
     return invisiblePieces[totalOfDistancesArr.indexOf(Math.min(...totalOfDistancesArr))];
 }
 
-export function convertArrayPositionToAxis({i, j}: {i: number, j: number}) {
-    
-}
-
 export function convertAxisToArrayPosition({x, y}: {x: number, y: number}){
     return {
-        i: Math.floor(y / PIECE.HEIGHT),
+        i: Math.floor((y - WALL.TOP_HEIGHT) / (PIECE.HEIGHT - PIECE.HEIGHT_CLOSE_MARGIN)),
         j: Math.floor(x / PIECE.WIDTH) - 1
     }
 }
