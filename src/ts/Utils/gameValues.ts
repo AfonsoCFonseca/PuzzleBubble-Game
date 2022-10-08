@@ -47,11 +47,27 @@ export const PLAYER_POS = {
     HEIGHT: BACKGROUND.HEIGHT - 100
 }
 
+export const SCORE_TEXT_POS = {
+    X: HALF_SCREEN.WIDTH + 200,
+    Y: BACKGROUND.HEIGHT - 100
+}
+
+export const HIGHSCORE_TEXT_POS = {
+    X: HALF_SCREEN.WIDTH + 190,
+    Y: BACKGROUND.HEIGHT - 180
+}
+
+export const BUTTON_SIZE = {
+    WIDTH: 376,
+    HEIGHT: 81
+}
+
 export const RAY_SPEED = 0.03;
 export const BALL_SPEED = 120;
 export const AVERAGE_LINE_SIZE = HALF_SCREEN.WIDTH;
 export const TIME_BEFORE_DELETE_PIECE = 100;
 export const TIME_TO_FALL = 200;
+export const BASE_SCORE = 100;
 
 export const RED_COLOR = 0xFF0000;
 export const GREEN_COLOR = 0x00aa00;

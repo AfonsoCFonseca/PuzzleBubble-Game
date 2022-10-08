@@ -1,7 +1,7 @@
 import { debugMap } from '../debugMap';
 import { BALL_TYPES, Position } from '../game.interfaces';
 import { gameScene, invisiblePiecesGroup, piecesGroup } from '../Scenes/GameScene';
-import { GRID_LENGTH, HALF_SCREEN, PIECE, WALL } from '../Utils/gameValues'
+import { BASE_SCORE, GRID_LENGTH, HALF_SCREEN, PIECE, WALL } from '../Utils/gameValues'
 import { calculateClosestInvisiblePiece, convertAxisToArrayPosition, getPointFromWall, idAlreadyExistInArray, removeDuplicates, rndNumber } from '../Utils/utils';
 import { gameManager } from './GameManager';
 import Piece from './Piece';
@@ -92,6 +92,7 @@ export default class Grid {
                     })
                 })
                 playerPiece.makePieceGrey();
+                gameScene.gameOver();
             }
             
         }, 50)
@@ -198,6 +199,7 @@ export default class Grid {
                     }
                 });
             });
+            gameManager.addScore( BASE_SCORE * matchedPieces.length)
         }
     }
 }

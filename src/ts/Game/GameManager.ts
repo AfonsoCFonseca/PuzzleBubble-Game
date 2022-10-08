@@ -1,10 +1,10 @@
 export let gameManager: GameManager
 
 import { GAME_STATE, SIDE } from '../game.interfaces';
-import GameScene, { player } from '../Scenes/GameScene';
+import GameScene, { gameScene, player } from '../Scenes/GameScene';
 
-import { BACKGROUND, GREEN_COLOR, HALF_SCREEN, RED_COLOR, WALL } from '../Utils/gameValues';
-import { convertAxisToArrayPosition, drawLine, getPointFromWall, isOriginalPoint } from '../Utils/utils';
+import { BACKGROUND, GREEN_COLOR, HALF_SCREEN, HIGHSCORE_TEXT_POS, RED_COLOR, SCORE_TEXT_POS, WALL } from '../Utils/gameValues';
+import { convertAxisToArrayPosition, drawLine, getCookie, getPointFromWall, isOriginalPoint, setCookie } from '../Utils/utils';
 
 export let myGraphics;
 
@@ -16,6 +16,11 @@ export default class GameManager {
     public aimLine: Phaser.Geom.Line;
     public currentGameState: GAME_STATE;
 
+    private currentScoreText;
+    private currentHighScoreText;
+    public currentScore = 0;
+    public highScore = getCookie('highscore') || 0;
+
     constructor(graphics) {
         gameManager = this;
         myGraphics = graphics;
@@ -25,12 +30,31 @@ export default class GameManager {
     private start() {
         this.currentGameState = GAME_STATE.RUNNING;
         this.createGeoms();
+        this.drawScore();
     }
 
     public update() {
         myGraphics.clear();
         if (this.currentGameState === GAME_STATE.RUNNING) {
             this.renderGeoms();
+        }
+    }
+
+    private drawScore() {
+        this.currentScoreText = gameScene.add.text(SCORE_TEXT_POS.X, SCORE_TEXT_POS.Y, 
+            this.highScore, { font: "45px Arial", align: "center" });
+
+        this.currentHighScoreText = gameScene.add.text(HIGHSCORE_TEXT_POS.X, HIGHSCORE_TEXT_POS.Y, 
+            this.currentScore, { font: "65px Arial", align: "center" });
+    }
+
+    public addScore(scoreToAdd: number) {
+        this.currentScore += scoreToAdd;
+        this.currentScoreText.setText(this.currentScore);
+        if (this.currentScore >= this.highScore) {
+            this.highScore = this.currentScore;
+            setCookie('highscore', this.highScore, 7);
+            this.currentHighScoreText.setText(this.highScore);
         }
     }
 

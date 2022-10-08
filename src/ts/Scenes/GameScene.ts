@@ -3,7 +3,7 @@ import GameManager, { myGraphics } from '../Game/GameManager';
 import Player from '../Game/Player'
 import Piece from '../Game/Piece'
 
-import { ARROW_IMAGE, BACKGROUND, GAMEOVER_BOARD, HALF_SCREEN, PIECE, WALL } from '../Utils/gameValues';
+import { ARROW_IMAGE, BACKGROUND, BUTTON_SIZE, GAMEOVER_BOARD, HALF_SCREEN, PIECE, WALL } from '../Utils/gameValues';
 import { BALL_TYPES, GAME_STATE, SIDE } from '../game.interfaces';
 import Grid from '../Game/Grid';
 
@@ -15,7 +15,6 @@ export let gameManager: GameManager;
 
 export let piecesGroup: Phaser.GameObjects.Group;
 export let invisiblePiecesGroup: Phaser.GameObjects.Group;
-export let gameOverGroup: Phaser.GameObjects.Group;
 
 export let aimArrow: Phaser.GameObjects.Image;
 
@@ -55,7 +54,6 @@ export default class GameScene extends Phaser.Scene {
 
         piecesGroup = this.add.group();
         invisiblePiecesGroup = this.add.group();
-        gameOverGroup = this.add.group();
     }
 
     create() {
@@ -84,32 +82,37 @@ export default class GameScene extends Phaser.Scene {
         this.pieceCollision();
     }
 
-    private resetGame() {
-        myGraphics.clear();
-        aimArrow.angle = ARROW_IMAGE.INITIAL_ANGLE;
-        gameOverGroup.clear(true, true);
-        gameManager.resetAimLine()
-        gameManager.setCurrentGameState(GAME_STATE.RUNNING);
-    }
-
-    private gameOver() {
+    public gameOver() {
+        //Board
         gameManager.setCurrentGameState(GAME_STATE.PAUSE);
         const boardX = BACKGROUND.WIDTH / 2 - GAMEOVER_BOARD.WIDTH / 2
         const boardY = BACKGROUND.HEIGHT / 2 - GAMEOVER_BOARD.HEIGHT / 2
-        const board = this.add.rectangle(boardX, boardY, GAMEOVER_BOARD.WIDTH, 
+        this.add.rectangle(boardX, boardY, GAMEOVER_BOARD.WIDTH, 
             GAMEOVER_BOARD.HEIGHT, this.bgColor).setOrigin(0,0).setDepth(1);
-
-        const buttonReset = this.add.image(boardX + GAMEOVER_BOARD.WIDTH / 2 - 188,
-            boardY ,'buttonReset').setDepth(1).setOrigin(0, 0);
+        
+        //Gamover & Score text
+        gameScene.add.text( boardX + GAMEOVER_BOARD.WIDTH / 2, boardY + 100,
+            'GAME OVER', { font: "65px Arial", align: "center" }).setDepth(2).setOrigin(0.5, 0);
+        gameScene.add.text( boardX + GAMEOVER_BOARD.WIDTH / 2, boardY + 180,
+            gameManager.currentScore, { font: "65px Arial", align: "center" }).setDepth(2).setOrigin(0.5, 0);
+        gameScene.add.text( boardX + GAMEOVER_BOARD.WIDTH / 2, boardY + 270,
+            gameManager.highScore, { font: "45px Arial", align: "center" }).setDepth(2).setOrigin(0.5, 0);
+            
+        const BTNS_X = boardX + GAMEOVER_BOARD.WIDTH / 2 - BUTTON_SIZE.WIDTH /2
+        const BTNS_Y = (boardY + GAMEOVER_BOARD.HEIGHT) - 220;
+        
+        //Button Reset
+        this.add.rectangle(BTNS_X, BTNS_Y, BUTTON_SIZE.WIDTH, BUTTON_SIZE.HEIGHT, 
+            this.bgColor, 0.3).setDepth(2).setOrigin(0, 0);
+        const buttonReset = this.add.image(BTNS_X, BTNS_Y ,'buttonReset').setDepth(1).setOrigin(0, 0);
         buttonReset.setInteractive({ useHandCursor: true });
-        buttonReset.on('pointerup', () => this.resetGame());
-
-        const buttonMainMenu = this.add.image(boardX + GAMEOVER_BOARD.WIDTH / 2 - 188,
-            boardY + 100,'buttonMenu').setDepth(1).setOrigin(0, 0);
+        buttonReset.on('pointerup', () => this.scene.start('GameScene'));
+        //Button Menu
+        this.add.rectangle(BTNS_X, BTNS_Y + 100, BUTTON_SIZE.WIDTH, BUTTON_SIZE.HEIGHT, 
+            this.bgColor, 0.3).setDepth(2).setOrigin(0, 0);
+        const buttonMainMenu = this.add.image(BTNS_X, BTNS_Y + 100,'buttonMenu').setDepth(1).setOrigin(0, 0);
         buttonMainMenu.setInteractive({ useHandCursor: true });
         buttonMainMenu.on('pointerup', () => this.scene.start('MenuScene'));
-
-        gameOverGroup.addMultiple([board, buttonReset, buttonMainMenu]);
     }
 
     private createFrameAndWalls() {
