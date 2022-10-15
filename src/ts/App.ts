@@ -1,6 +1,7 @@
 import GameScene from './Scenes/GameScene'
 import MenuScene from './Scenes/MenuScene'
 import 'phaser'
+import { debugLogs } from './Utils/gameValues';
 
 export const config = {
     type: Phaser.AUTO,
@@ -15,7 +16,7 @@ export const config = {
     physics: {
         default: 'arcade',
         arcade: {
-            debug: false
+            debug: debugLogs
         }
     },
     scene: [GameScene, MenuScene]

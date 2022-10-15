@@ -1,6 +1,6 @@
 import { BALL_TYPES as BALL_COLORS, PieceConfigs, Position } from "../game.interfaces";
 import { gameScene, invisiblePiecesGroup, piecesGroup, player } from "../Scenes/GameScene"
-import { AVERAGE_LINE_SIZE, BACKGROUND, BALL_SPEED, PIECE, TIME_TO_FALL } from "../Utils/gameValues";
+import { AVERAGE_LINE_SIZE, BACKGROUND, BALL_SPEED, debugLogs, PIECE, TIME_TO_FALL } from "../Utils/gameValues";
 import { applyPythagoreanTheorem, getBallType, makeAnimation } from "../Utils/utils";
 
 export default class Piece extends Phaser.GameObjects.Sprite {
@@ -10,7 +10,7 @@ export default class Piece extends Phaser.GameObjects.Sprite {
     private currentAnimation = null;
     private isPlayerPiece: boolean;
     private id: string;
-    private isDebug = true;
+    private isDebug = debugLogs;
     private textId:  Phaser.GameObjects.Text;
     private lastInvisiblePieceOverlaped = [];
     private MAX_INVISIBLE_PIECE_ARRAY = 3;

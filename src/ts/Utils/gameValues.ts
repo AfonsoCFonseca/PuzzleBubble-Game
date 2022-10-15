@@ -39,7 +39,8 @@ export const LIMIT_MOV = {
 export const GRID_LENGTH = {
     Y: 5,
     X: 8,
-    MAX_HEIGHT: 13
+    MAX_HEIGHT: 13,
+    MAX_WIDTH: 7
 }
 
 export const PLAYER_POS = { 
@@ -71,3 +72,6 @@ export const BASE_SCORE = 100;
 
 export const RED_COLOR = 0xFF0000;
 export const GREEN_COLOR = 0x00aa00;
+
+export const debugLogs = true;
+export const debugOptMap = false;

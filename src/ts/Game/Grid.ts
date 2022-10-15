@@ -1,7 +1,7 @@
 import { debugMap } from '../debugMap';
 import { BALL_TYPES, Position } from '../game.interfaces';
 import { gameScene, invisiblePiecesGroup, piecesGroup } from '../Scenes/GameScene';
-import { BASE_SCORE, GRID_LENGTH, HALF_SCREEN, PIECE, WALL } from '../Utils/gameValues'
+import { BASE_SCORE, debugOptMap, GRID_LENGTH, HALF_SCREEN, PIECE, WALL } from '../Utils/gameValues'
 import { calculateClosestInvisiblePiece, convertAxisToArrayPosition, getPointFromWall, idAlreadyExistInArray, removeDuplicates, rndNumber } from '../Utils/utils';
 import { gameManager } from './GameManager';
 import Piece from './Piece';
@@ -11,7 +11,7 @@ export default class Grid {
     currentGrid: Piece[][] = [];
 
     constructor() {
-        this.buildGrid(false);
+        this.buildGrid(debugOptMap);
     }
 
     private buildGrid(debug: boolean = false) {
@@ -82,7 +82,7 @@ export default class Grid {
                     self.removeInvisiblePiece(selectedInvisiblePiece);
                     self.addNewPieceToGrid(selectedInvisiblePiece, playerPiece);
                     const matchedPieces = self.checkForMatch(selectedInvisiblePiece, playerPiece);
-                    self.popMatches(matchedPieces);
+                    self.popUpPieces(matchedPieces);
                     callback();
                 });
             } else {
@@ -161,13 +161,16 @@ export default class Grid {
     private getAdjacentPieces(i: number, j: number): Piece[] {
         let adjacentArray: Piece[] = []
         //calculate horizontal
-        if (j - 1 >= 0) adjacentArray.push(this.currentGrid[i][j - 1])
+        if (j - 1 >= 0 && !this.currentGrid[i][j - 1].isEmpty()) 
+            adjacentArray.push(this.currentGrid[i][j - 1])
         const maxGridLenth = GRID_LENGTH.X - (i % 2 === 0 ? 0 : 1);
-        if (j + 1 < maxGridLenth) adjacentArray.push(this.currentGrid[i][j + 1])
+        if (j + 1 < maxGridLenth && !this.currentGrid[i][j + 1].isEmpty()) 
+            adjacentArray.push(this.currentGrid[i][j + 1])
 
         //calculate vertical
-        if (i - 1 >= 0)
+        if (i - 1 >= 0) {
             adjacentArray = [...adjacentArray, ...this.matchVerticalPieces('UP', i, j)];
+        }
 
         if(i + 1 <= GRID_LENGTH.MAX_HEIGHT)
             adjacentArray = [...adjacentArray, ...this.matchVerticalPieces('DOWN', i, j)];
@@ -189,17 +192,71 @@ export default class Grid {
         return currentAdjVerticalArr;
     }
 
-    private popMatches(matchedPieces: Piece[]) {
+    private popUpPieces(matchedPieces: Piece[]) {
+        const self = this;
         if( matchedPieces.length >= 3) {
-            matchedPieces.forEach(matchedPiece => {
-                this.currentGrid.forEach((line, indexLine) => {
-                    const index = line.findIndex(piece => piece.getId() === matchedPiece.getId());
-                    if(index >= 0) {
-                        this.currentGrid[indexLine][index].switchForInvisible();
-                    }
-                });
-            });
+            this.fallPieces(matchedPieces)
+            const separatedPieces = self.checkForSeparatedPieces();
+            this.fallPieces(separatedPieces)
+
             gameManager.addScore( BASE_SCORE * matchedPieces.length)
         }
+    }
+
+    private fallPieces(piecesToFall) {
+        piecesToFall.forEach(fallPiece => {
+            this.currentGrid.forEach((line, indexLine) => {
+                const index = line.findIndex(piece => piece.getId() === fallPiece.getId());
+                if(index >= 0) {
+                    this.currentGrid[indexLine][index].switchForInvisible();
+                }
+            });
+        });
+    }
+
+    private checkForSeparatedPieces() {
+        let notToFallPieces = [];
+
+        this.currentGrid.forEach(line => {
+            line.forEach( piece => {
+                const {i, j} = convertAxisToArrayPosition({ x: piece.x, y: piece.y });
+                if(i >= 1) {
+                    if(piece.getColor() !== BALL_TYPES.INVISIBLE) {
+
+                        const adjs = this.getAdjacentPieces(i, j);
+                        adjs.forEach( adjPiece => {
+                            const newPieces = notToFallPieces.find((currentP) => currentP.getId() === adjPiece.getId())
+                            if(newPieces) {
+                                const alreadyExists = notToFallPieces.find(currentP => 
+                                    currentP.getId() === piece.getId())
+                                if(!alreadyExists) notToFallPieces.push(piece);
+                            }
+                        })
+
+                    }
+                } else {
+                    if(piece.getColor() !== BALL_TYPES.INVISIBLE) {
+                        notToFallPieces.push(piece);
+                    }
+                }
+            })
+        })
+
+        return this.getIsolatedPiecesFromGrid(notToFallPieces);
+    }
+
+    private getIsolatedPiecesFromGrid(notToFallPieces) {
+        let isolatedPieces = [];
+        this.currentGrid.forEach(line => {
+            line.forEach(piece => {
+                if(piece.getColor() !== BALL_TYPES.INVISIBLE) {
+                    const found = notToFallPieces.find(notToFallPiece => 
+                        notToFallPiece.getId() === piece.getId()) 
+                    if(!found) isolatedPieces.push(piece);
+                }
+            })
+        })
+
+        return isolatedPieces;
     }
 }

@@ -42,6 +42,9 @@ If more than 2 pieces match, the system starts the process of those pieces falli
 
 Decided to fix some bugs and make the trigger that starts the gameover logic. To trigger, I validate every time a piece is set into the grid and if that piece has Y position bigger than 12, where 12 represents the max_size of the array height, then every piece in the currentGrid is set to invisible and for each of them, a new grey image is created above it. After a few seconds, the Gameover screen pops up.
 
+Applied the logic for the fallen pieces after a match. After matching, I check the map for pieces that might be separated from the rest of the grid. This search system checks if every piece in the map is connected to another related to one of the top pieces of the map.
+If it is, it's pushed to an array, in the end, I run the array and compare it to every existent piece, if there are pieces that don't belong to that array it means they are isolated and they should fall just after the matching pieces that fell previously
+
 ---------------------------------------------------------------
 # Sketches & Evolution
 

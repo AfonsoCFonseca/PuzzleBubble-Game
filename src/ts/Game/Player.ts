@@ -1,10 +1,11 @@
-import { BACKGROUND, HALF_SCREEN, PIECE, RAY_SPEED, TIME_BEFORE_DELETE_PIECE } from "../Utils/gameValues";
+import { BACKGROUND, debugOptMap, HALF_SCREEN, PIECE, RAY_SPEED, TIME_BEFORE_DELETE_PIECE } from "../Utils/gameValues";
 import GameManager from "./GameManager";
 import GameScene, { aimArrow, gameScene } from "../Scenes/GameScene";
 import Piece from "./Piece";
 import { isMovementLimit, rndNumber } from "../Utils/utils";
 import { SIDE } from "../game.interfaces";
 import { config, game } from "../App";
+import { playerPieceDebug } from "../debugMap";
 
 export default class Player {
 
@@ -32,7 +33,7 @@ export default class Player {
         });
         this.currentPiece = new Piece(this.playerPosition,{
             isPlayerPiece: true,
-            pieceColor: rndNumber(0, 6),
+            pieceColor: debugOptMap ? playerPieceDebug : rndNumber(0, 6),
         });
     }
 
