@@ -73,5 +73,5 @@ export const BASE_SCORE = 100;
 export const RED_COLOR = 0xFF0000;
 export const GREEN_COLOR = 0x00aa00;
 
-export const debugLogs = true;
-export const debugOptMap = true;
+export const debugLogs = false;
+export const debugOptMap = false;
