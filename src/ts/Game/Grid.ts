@@ -1,14 +1,17 @@
 import { debugMap } from '../debugMap';
 import { BALL_TYPES, Position } from '../game.interfaces';
-import { gameScene, invisiblePiecesGroup, piecesGroup } from '../Scenes/GameScene';
+import { gameScene, invisiblePiecesGroup, piecesGroup, player } from '../Scenes/GameScene';
 import { BASE_SCORE, debugOptMap, GRID_LENGTH, HALF_SCREEN, PIECE, WALL } from '../Utils/gameValues'
 import { calculateClosestInvisiblePiece, convertAxisToArrayPosition, getPointFromWall, idAlreadyExistInArray, removeDuplicates, rndNumber } from '../Utils/utils';
 import { gameManager } from './GameManager';
+import ShakePosition from 'phaser3-rex-plugins/plugins/shakeposition.js';
 import Piece from './Piece';
 
 export default class Grid {
 
     currentGrid: Piece[][] = [];
+    animShakeArr = [];
+    positionDownwards = false;
 
     constructor() {
         this.buildGrid(debugOptMap);
@@ -67,6 +70,17 @@ export default class Grid {
         return y;
     }
 
+    private getOnlyExistentPieces(): Piece[] {
+        let currentArr: Piece[] = [];
+        this.currentGrid.forEach(line => {
+            line.forEach(piece => {
+                if(piece.getColor() !== BALL_TYPES.INVISIBLE)
+                    currentArr.push(piece)
+            })
+        })
+        return currentArr;
+    }
+
     public addPlayerPieceToGrid(playerPiece: Piece, callback) {
         const self = this;
         playerPiece.stopMovement();
@@ -86,16 +100,20 @@ export default class Grid {
                     callback();
                 });
             } else {
-                this.currentGrid.forEach(lineOfPieces => {
-                    lineOfPieces.forEach(piece => {
-                        piece.makePieceGrey()
-                    })
-                })
-                playerPiece.makePieceGrey();
-                gameScene.gameOver();
+                this.animateGameOverSequence(playerPiece);
             }
             
         }, 50)
+    }
+
+    private animateGameOverSequence(playerPiece) {
+        this.currentGrid.forEach(lineOfPieces => {
+            lineOfPieces.forEach(piece => {
+                piece.makePieceGrey()
+            })
+        })
+        playerPiece.makePieceGrey();
+        gameScene.gameOver();
     }
 
     private overlapInvisiblePieces(playerPiece: Piece) {
@@ -258,5 +276,42 @@ export default class Grid {
         })
 
         return isolatedPieces;
+    }
+
+    public downwardPieces(state: number) {
+        const currentExistentPieces = this.getOnlyExistentPieces();
+
+        switch(state) {
+            case 0: 
+                this.animShakeArr.forEach(piece => piece.stop());
+                this.animShakeArr = [];
+                this.positionDownwards = true;
+            break;
+            case 1: 
+                this.animShakeArr.forEach(piece => piece.stop());
+                this.animShakeArr = [];
+                currentExistentPieces.forEach( (piece, index) => {
+                    this.animShakeArr.push(this.createShareState(piece, 2));
+                    this.animShakeArr[index].shake();
+                })
+
+            break;
+            case 2:
+                this.animShakeArr = [];
+                currentExistentPieces.forEach( (piece, index) => {
+                    this.animShakeArr.push(this.createShareState(piece, 1));
+                    this.animShakeArr[index].shake();
+                })
+            break
+        }
+    }
+
+    private createShareState(piece: Piece, magnitude: number) {
+        return new ShakePosition(piece, {
+            mode: 1, // 0|'effect'|1|'behavior'
+            duration: 50000000,
+            magnitude: magnitude,
+            magnitudeMode: 1, // 0|'constant'|1|'decay'
+        })
     }
 }

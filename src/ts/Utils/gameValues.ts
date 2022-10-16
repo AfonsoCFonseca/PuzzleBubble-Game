@@ -74,4 +74,4 @@ export const RED_COLOR = 0xFF0000;
 export const GREEN_COLOR = 0x00aa00;
 
 export const debugLogs = true;
-export const debugOptMap = false;
+export const debugOptMap = true;

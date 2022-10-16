@@ -12,7 +12,8 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.18.1",
-    "path": "^0.12.7"
+    "path": "^0.12.7",
+    "phaser3-rex-plugins": "^1.1.74"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^4.14.2",

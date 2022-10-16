@@ -24,6 +24,7 @@ export default class GameScene extends Phaser.Scene {
 
     private leftWall;
     private rightWall;
+    private topWall;
     private bgColor;
 
     private currentPieceCollider;
@@ -92,11 +93,11 @@ export default class GameScene extends Phaser.Scene {
         
         //Gamover & Score text
         gameScene.add.text( boardX + GAMEOVER_BOARD.WIDTH / 2, boardY + 100,
-            'GAME OVER', { font: "65px Arial", align: "center" }).setDepth(2).setOrigin(0.5, 0);
+            'GAME OVER', { font: "65px", align: "center" }).setDepth(2).setOrigin(0.5, 0);
         gameScene.add.text( boardX + GAMEOVER_BOARD.WIDTH / 2, boardY + 180,
-            gameManager.currentScore, { font: "65px Arial", align: "center" }).setDepth(2).setOrigin(0.5, 0);
+            gameManager.currentScore, { font: "65px", align: "center" }).setDepth(2).setOrigin(0.5, 0);
         gameScene.add.text( boardX + GAMEOVER_BOARD.WIDTH / 2, boardY + 270,
-            gameManager.highScore, { font: "45px Arial", align: "center" }).setDepth(2).setOrigin(0.5, 0);
+            gameManager.highScore, { font: "45px", align: "center" }).setDepth(2).setOrigin(0.5, 0);
             
         const BTNS_X = boardX + GAMEOVER_BOARD.WIDTH / 2 - BUTTON_SIZE.WIDTH /2
         const BTNS_Y = (boardY + GAMEOVER_BOARD.HEIGHT) - 220;
@@ -132,6 +133,9 @@ export default class GameScene extends Phaser.Scene {
         this.rightWall = this.add.rectangle(BACKGROUND.WIDTH - WALL.WIDTH, 0, 
             WALL.WIDTH, BACKGROUND.HEIGHT).setOrigin(0,0);
         gameScene.physics.add.existing(this.rightWall);
+        this.topWall = this.add.rectangle(0, 0, 
+            BACKGROUND.WIDTH, WALL.TOP_HEIGHT).setOrigin(0,0);
+        gameScene.physics.add.existing(this.topWall);
     }
 
     public pieceCollision() {
@@ -148,6 +152,18 @@ export default class GameScene extends Phaser.Scene {
                     });
                 }
             });
+
+        let controlTop = true;
+        this.physics.add.collider(player.getCurrentPiece(), this.topWall, (playerPiece: Piece) => {
+            if(controlTop) {
+                if (player.getCurrentPiece() === playerPiece && controlTop ) {
+                    controlTop = false;
+                    grid.addPlayerPieceToGrid(playerPiece as Piece, () => {
+                        self.refreshCollision();
+                    });
+                }
+            }
+        })
     }
 
     public refreshCollision() {
@@ -165,7 +181,10 @@ export default class GameScene extends Phaser.Scene {
             } else if (this.input.keyboard.checkDown(keys.right)){
                 player.move(SIDE.RIGHT)
             }
-            this.input.keyboard.on('keydown-SPACE', () => player.shootPiece());
+            this.input.keyboard.on('keydown-SPACE', () => { 
+                player.shootPiece()
+            });
         }
     }
+    
 }

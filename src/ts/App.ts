@@ -2,6 +2,8 @@ import GameScene from './Scenes/GameScene'
 import MenuScene from './Scenes/MenuScene'
 import 'phaser'
 import { debugLogs } from './Utils/gameValues';
+import ShakePositionPlugin from 'phaser3-rex-plugins/plugins/shakeposition-plugin.js';
+
 
 export const config = {
     type: Phaser.AUTO,
@@ -19,6 +21,11 @@ export const config = {
             debug: debugLogs
         }
     },
+    global: [{
+        key: 'rexShakePosition',
+        plugin: ShakePositionPlugin,
+        start: true
+    }],
     scene: [GameScene, MenuScene]
 };
 

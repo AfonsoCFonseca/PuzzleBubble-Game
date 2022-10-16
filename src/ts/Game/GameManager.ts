@@ -1,7 +1,7 @@
 export let gameManager: GameManager
 
 import { GAME_STATE, SIDE } from '../game.interfaces';
-import GameScene, { gameScene, player } from '../Scenes/GameScene';
+import GameScene, { gameScene, grid, player } from '../Scenes/GameScene';
 
 import { BACKGROUND, GREEN_COLOR, HALF_SCREEN, HIGHSCORE_TEXT_POS, RED_COLOR, SCORE_TEXT_POS, WALL } from '../Utils/gameValues';
 import { convertAxisToArrayPosition, drawLine, getCookie, getPointFromWall, isOriginalPoint, setCookie } from '../Utils/utils';
@@ -20,6 +20,9 @@ export default class GameManager {
     private currentHighScoreText;
     public currentScore = 0;
     public highScore = getCookie('highscore') || 0;
+
+    private totalPiecesShot = 0;
+    private TOTAL_TIMES_TO_MOVE_GRID = 5;
 
     constructor(graphics) {
         gameManager = this;
@@ -140,5 +143,18 @@ export default class GameManager {
         const secondaryAimLine = drawLine(currentPoint, secondaryLinePointB_X, secondaryLinePointB_Y)
 
         return secondaryAimLine;
+    }
+
+    public addTotalPiecesShot() {
+        this.totalPiecesShot++;
+
+        if(this.totalPiecesShot === this.TOTAL_TIMES_TO_MOVE_GRID - 2) {
+            grid.downwardPieces(2);
+        } else if(this.totalPiecesShot === this.TOTAL_TIMES_TO_MOVE_GRID - 1) {
+            grid.downwardPieces(1);
+        } else if(this.totalPiecesShot === this.TOTAL_TIMES_TO_MOVE_GRID) {
+            grid.downwardPieces(0);
+            this.totalPiecesShot = 0
+        }
     }
 }

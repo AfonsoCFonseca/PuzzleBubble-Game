@@ -1,5 +1,5 @@
 import { BACKGROUND, debugOptMap, HALF_SCREEN, PIECE, RAY_SPEED, TIME_BEFORE_DELETE_PIECE } from "../Utils/gameValues";
-import GameManager from "./GameManager";
+import GameManager, { gameManager } from "./GameManager";
 import GameScene, { aimArrow, gameScene } from "../Scenes/GameScene";
 import Piece from "./Piece";
 import { isMovementLimit, rndNumber } from "../Utils/utils";
@@ -77,6 +77,7 @@ export default class Player {
 
     public shootPiece() {
         if (this.isShooting === false) {
+            gameManager.addTotalPiecesShot();
             this.currentPiece.shoot(this.getSecondaryAimLines());
             this.isShooting = true;
         }
