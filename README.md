@@ -1,8 +1,8 @@
 # Puzzle Bubble
 
-<!-- <p align="center">
-  <img src='https://github.com/AfonsoCFonseca/Bejeweled-Game/blob/main/screenshots/ImageBorderGithub.png'>
-</p> -->
+<p align="center">
+  <img src='https://github.com/AfonsoCFonseca/PuzzleBubble-Game/blob/main/screenshots/header.png'>
+</p>
 
 ---------------------------------------------------------------
 # Structure
