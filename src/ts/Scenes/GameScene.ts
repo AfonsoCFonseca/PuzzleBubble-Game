@@ -47,6 +47,7 @@ export default class GameScene extends Phaser.Scene {
         this.load.image('buttonMenu', 'assets/buttonMenu.png')
         this.load.image('ballFrame', 'assets/ballFrame.png')
         this.load.image('ballNextFrame', 'assets/ballNextFrame.png')
+        this.load.image('gameOverBoard', 'assets/gameOverBoard.png')
 
         this.load.spritesheet('bubbles', 'assets/bubbles.png', {
             frameWidth: PIECE.WIDTH,
@@ -89,28 +90,30 @@ export default class GameScene extends Phaser.Scene {
         const boardX = BACKGROUND.WIDTH / 2 - GAMEOVER_BOARD.WIDTH / 2
         const boardY = BACKGROUND.HEIGHT / 2 - GAMEOVER_BOARD.HEIGHT / 2
         this.add.rectangle(boardX, boardY, GAMEOVER_BOARD.WIDTH, 
-            GAMEOVER_BOARD.HEIGHT, this.bgColor).setOrigin(0,0).setDepth(1);
+            GAMEOVER_BOARD.HEIGHT, this.bgColor, 0.2).setOrigin(0,0).setDepth(1.1);
+
+        this.add.image(boardX, boardY, 'gameOverBoard').setOrigin(0,0).setDepth(1)
         
         //Gamover & Score text
-        gameScene.add.text( boardX + GAMEOVER_BOARD.WIDTH / 2, boardY + 100,
+        gameScene.add.text( boardX + GAMEOVER_BOARD.WIDTH / 2, boardY + 75,
             'GAME OVER', { font: "65px", align: "center" }).setDepth(2).setOrigin(0.5, 0);
-        gameScene.add.text( boardX + GAMEOVER_BOARD.WIDTH / 2, boardY + 180,
+        gameScene.add.text( boardX + GAMEOVER_BOARD.WIDTH / 2, boardY + 160,
             gameManager.currentScore, { font: "65px", align: "center" }).setDepth(2).setOrigin(0.5, 0);
-        gameScene.add.text( boardX + GAMEOVER_BOARD.WIDTH / 2, boardY + 270,
+        gameScene.add.text( boardX + GAMEOVER_BOARD.WIDTH / 2, boardY + 250,
             gameManager.highScore, { font: "45px", align: "center" }).setDepth(2).setOrigin(0.5, 0);
             
         const BTNS_X = boardX + GAMEOVER_BOARD.WIDTH / 2 - BUTTON_SIZE.WIDTH /2
-        const BTNS_Y = (boardY + GAMEOVER_BOARD.HEIGHT) - 220;
+        const BTNS_Y = (boardY + GAMEOVER_BOARD.HEIGHT) - 230;
         
         //Button Reset
         this.add.rectangle(BTNS_X, BTNS_Y, BUTTON_SIZE.WIDTH, BUTTON_SIZE.HEIGHT, 
-            this.bgColor, 0.3).setDepth(2).setOrigin(0, 0);
+            this.bgColor, 0.1).setDepth(2).setOrigin(0, 0);
         const buttonReset = this.add.image(BTNS_X, BTNS_Y ,'buttonReset').setDepth(1).setOrigin(0, 0);
         buttonReset.setInteractive({ useHandCursor: true });
         buttonReset.on('pointerup', () => this.scene.start('GameScene'));
         //Button Menu
         this.add.rectangle(BTNS_X, BTNS_Y + 100, BUTTON_SIZE.WIDTH, BUTTON_SIZE.HEIGHT, 
-            this.bgColor, 0.3).setDepth(2).setOrigin(0, 0);
+            this.bgColor, 0.1).setDepth(2).setOrigin(0, 0);
         const buttonMainMenu = this.add.image(BTNS_X, BTNS_Y + 100,'buttonMenu').setDepth(1).setOrigin(0, 0);
         buttonMainMenu.setInteractive({ useHandCursor: true });
         buttonMainMenu.on('pointerup', () => this.scene.start('MenuScene'));

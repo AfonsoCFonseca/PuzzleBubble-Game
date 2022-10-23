@@ -42,8 +42,9 @@ export default class Grid {
         }
     }
 
-    private createAndAddNewPieceToGrid(i: number, j: number, pieceType: BALL_TYPES = null) {
-        const x = this.calculateXPosition(i, j);
+    private createAndAddNewPieceToGrid(i: number, j: number, pieceType: BALL_TYPES,
+        isMaxLine: boolean = null) {
+        const x = this.calculateXPosition(i, j, isMaxLine);
         const y = this.calculateYPosition(i);
 
         this.currentGrid[i].push(new Piece({x, y}, {
@@ -52,10 +53,12 @@ export default class Grid {
         }))
     }
 
-    private calculateXPosition(i: number, j: number): number {
+    private calculateXPosition(i: number, j: number, isMaxLine: boolean): number {
         //makes the 8 and 7 piece pattern symetrical
         let x = PIECE.WIDTH * j;
-        const xMargin = i % 2 === 0 ? 0 : PIECE.WIDTH / 2; 
+        const xMargin = isMaxLine !== null ? 
+            (isMaxLine === true ? 0 : PIECE.WIDTH / 2)
+            : (i % 2 === 0 ? 0 : PIECE.WIDTH / 2); 
         // To centre an 8 piece array I decrement the 4xpiece width to halfscreen
         //with and add half piece width to compensate for the piece setOrigin()
         const marginToCenter = (HALF_SCREEN.WIDTH - PIECE.WIDTH * 4) + PIECE.WIDTH / 2;
@@ -93,11 +96,14 @@ export default class Grid {
             const selectedInvisiblePiece = calculateClosestInvisiblePiece(playerPiece, invisiblePiecesArr);
             if(!gameManager.isGameOver(selectedInvisiblePiece.y)) {
                 playerPiece.move(selectedInvisiblePiece, 10, () => {
+                    playerPiece.setOriginalGridPosition();
                     self.removeInvisiblePiece(selectedInvisiblePiece);
                     self.addNewPieceToGrid(selectedInvisiblePiece, playerPiece);
                     const matchedPieces = self.checkForMatch(selectedInvisiblePiece, playerPiece);
                     self.popUpPieces(matchedPieces);
+                    this.moveDownwards();
                     callback();
+                    console.log(this.currentGrid)
                 });
             } else {
                 this.animateGameOverSequence(playerPiece);
@@ -175,13 +181,14 @@ export default class Grid {
 
         return piecesMatched;
     }
-
+    //Problem should be here
     private getAdjacentPieces(i: number, j: number): Piece[] {
         let adjacentArray: Piece[] = []
         //calculate horizontal
         if (j - 1 >= 0 && !this.currentGrid[i][j - 1].isEmpty()) 
             adjacentArray.push(this.currentGrid[i][j - 1])
-        const maxGridLenth = GRID_LENGTH.X - (i % 2 === 0 ? 0 : 1);
+
+        const maxGridLenth = GRID_LENGTH.X - (this.currentGrid[i].length === 8 ? 0 : 1);
         if (j + 1 < maxGridLenth && !this.currentGrid[i][j + 1].isEmpty()) 
             adjacentArray.push(this.currentGrid[i][j + 1])
 
@@ -240,7 +247,6 @@ export default class Grid {
                 const {i, j} = convertAxisToArrayPosition({ x: piece.x, y: piece.y });
                 if(i >= 1) {
                     if(piece.getColor() !== BALL_TYPES.INVISIBLE) {
-
                         const adjs = this.getAdjacentPieces(i, j);
                         adjs.forEach( adjPiece => {
                             const newPieces = notToFallPieces.find((currentP) => currentP.getId() === adjPiece.getId())
@@ -283,15 +289,15 @@ export default class Grid {
 
         switch(state) {
             case 0: 
-                this.animShakeArr.forEach(piece => piece.stop());
+                this.animShakeArr.forEach(anim => anim.stop());
                 this.animShakeArr = [];
                 this.positionDownwards = true;
             break;
             case 1: 
-                this.animShakeArr.forEach(piece => piece.stop());
+                this.animShakeArr.forEach(anim => anim.stop());
                 this.animShakeArr = [];
                 currentExistentPieces.forEach( (piece, index) => {
-                    this.animShakeArr.push(this.createShareState(piece, 2));
+                    this.animShakeArr.push(this.createShakeState(piece, 2));
                     this.animShakeArr[index].shake();
                 })
 
@@ -299,19 +305,61 @@ export default class Grid {
             case 2:
                 this.animShakeArr = [];
                 currentExistentPieces.forEach( (piece, index) => {
-                    this.animShakeArr.push(this.createShareState(piece, 1));
+                    this.animShakeArr.push(this.createShakeState(piece, 1));
                     this.animShakeArr[index].shake();
                 })
             break
         }
     }
 
-    private createShareState(piece: Piece, magnitude: number) {
+    private createShakeState(piece: Piece, magnitude: number) {
         return new ShakePosition(piece, {
             mode: 1, // 0|'effect'|1|'behavior'
             duration: 50000000,
             magnitude: magnitude,
             magnitudeMode: 1, // 0|'constant'|1|'decay'
         })
+    }
+
+    //TODO Refactor this
+    private moveDownwards() {
+        if(this.positionDownwards) {
+            this.currentGrid.forEach((line, index) => {
+                if (index + 1 < GRID_LENGTH.MAX_HEIGHT) {
+                    const nextY = this.currentGrid[index + 1][0].y;
+                    line.forEach(piece => { 
+                        piece.y = nextY
+                        piece.updateDebugString({x: piece.x, y: piece.y})
+                    });
+                } else {
+                    this.currentGrid[GRID_LENGTH.MAX_HEIGHT - 1].forEach(piece => { 
+                        piece.eraseDebugString()
+                        piece.destroy()
+                    })
+                }
+            })
+
+            let newCurrentGrid = [];
+            let oldFirstLine = [];
+            this.currentGrid.forEach((line, index) => {
+                if (index > 0) {
+                    newCurrentGrid[index] = index === 1 ? oldFirstLine : this.currentGrid[index - 1];
+                } else {
+                    newCurrentGrid[0] = [];
+                    const numbOfPiecesInLine = this.currentGrid[0].length === 8 ? 7 : 8;
+                    const isMaxLines = this.currentGrid[0].length === 8 ? false : true;
+                    oldFirstLine = this.currentGrid[0];
+                    this.currentGrid[0] = [];
+                    for(let i = 0; i < numbOfPiecesInLine; i++) {
+                        const pieceColor = rndNumber(0, 6);
+                        this.createAndAddNewPieceToGrid(0, i, pieceColor, isMaxLines)
+                    }
+                    newCurrentGrid[0] = this.currentGrid[0];
+                }
+            })
+            this.currentGrid = newCurrentGrid;
+            this.positionDownwards = false;
+
+        }
     }
 }

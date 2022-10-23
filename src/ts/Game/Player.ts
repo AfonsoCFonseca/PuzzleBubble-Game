@@ -14,6 +14,7 @@ export default class Player {
     private currentPiece: Piece = null;
     private isShooting = false;
     private nextPiece: Piece;
+    private previousPiece: Piece;
     private playerPosition = {
         x: HALF_SCREEN.WIDTH, 
         y: BACKGROUND.HEIGHT - PIECE.HEIGHT + 10
@@ -43,6 +44,10 @@ export default class Player {
 
     public setCurrentPiece(piece: Piece) {
         this.currentPiece = piece;
+    }
+
+    public getPreviousPiece() {
+        return this.previousPiece;
     }
 
     public getAimLine(): Phaser.Geom.Line {
@@ -77,7 +82,6 @@ export default class Player {
 
     public shootPiece() {
         if (this.isShooting === false) {
-            gameManager.addTotalPiecesShot();
             this.currentPiece.shoot(this.getSecondaryAimLines());
             this.isShooting = true;
         }
@@ -90,6 +94,7 @@ export default class Player {
             if (collidedWithGrid === false) this.resetCurrentPiece();
             this.generatePiece();
             if (collidedWithGrid === false) gameScene.refreshCollision();
+            gameManager.addTotalPiecesShot();
         }, timeBeforeDelete);
     }
 
@@ -110,6 +115,7 @@ export default class Player {
             pieceColor:  rndNumber(0, 6),
             isNextBall: true,
         });
+        this.previousPiece = this.getCurrentPiece();
         this.setCurrentPiece(newPiece);
         this.isShooting = false;
     }

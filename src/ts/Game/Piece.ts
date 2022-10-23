@@ -14,6 +14,7 @@ export default class Piece extends Phaser.GameObjects.Sprite {
     private textId:  Phaser.GameObjects.Text;
     private lastInvisiblePieceOverlaped = [];
     private MAX_INVISIBLE_PIECE_ARRAY = 3;
+    private originalGridPosition: Position;
     
     constructor({ x, y }: Position, { isPlayerPiece, pieceColor, isNextBall }: PieceConfigs) {
         super(gameScene, x, y, 'bubbles', pieceColor)
@@ -24,7 +25,10 @@ export default class Piece extends Phaser.GameObjects.Sprite {
 
         this.setCollisionSpecs();
 
-        if(!this.isPlayerPiece && this.color !== BALL_COLORS.INVISIBLE) piecesGroup.add(this);
+        if(!this.isPlayerPiece && this.color !== BALL_COLORS.INVISIBLE) {
+            piecesGroup.add(this);  
+            this.setOriginalGridPosition();
+        }
         if(this.isEmpty()) invisiblePiecesGroup.add(this);
 
         if( this.isDebug ) this.textId = gameScene.add.text(x - 25, y - 15, this.id.substring(0,4), {fontSize: '28px'}).setDepth(2);
@@ -55,6 +59,19 @@ export default class Piece extends Phaser.GameObjects.Sprite {
 
     public isEmpty(): boolean {
         return this.color === BALL_COLORS.INVISIBLE;
+    }
+
+    public goToOriginalGridPosition() {
+        if(!this.originalGridPosition) console.log(this)
+        this.x = this.originalGridPosition.x
+        this.y = this.originalGridPosition.y
+    }
+
+    public setOriginalGridPosition() {
+        this.originalGridPosition = {
+            x: this.x,
+            y: this.y
+        }
     }
 
     public switchForInvisible() {
