@@ -103,7 +103,6 @@ export default class Grid {
                     self.popUpPieces(matchedPieces);
                     this.moveDownwards();
                     callback();
-                    console.log(this.currentGrid)
                 });
             } else {
                 this.animateGameOverSequence(playerPiece);
@@ -163,7 +162,6 @@ export default class Grid {
             lastOne = false;
             const {i, j} = convertAxisToArrayPosition({ x: currentX, y: currentY });
             let adjPieces = this.getAdjacentPieces(i,j);
-
             adjPieces.forEach(adjPiece => {
                 if(adjPiece.getColor() === MATCH_COLOR && !idAlreadyExistInArray(adjPiece.getId(), piecesMatched)) {
                     piecesMatched.push(adjPiece);
@@ -205,7 +203,7 @@ export default class Grid {
 
     private matchVerticalPieces(state: 'UP' | 'DOWN', i: number, j: number) {
         const currentAdjVerticalArr = [];
-        const x = i % 2 === 0 ? j : j + 1
+        const x = this.currentGrid[i].length === 8 ? j : j + 1
         const y = state === 'DOWN' ? i + 1 : i - 1;
         if (this.currentGrid[y][x - 1] && !this.currentGrid[y][x - 1].isEmpty()) {
             currentAdjVerticalArr.push(this.currentGrid[y][x - 1])

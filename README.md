@@ -45,6 +45,8 @@ Decided to fix some bugs and make the trigger that starts the gameover logic. To
 Applied the logic for the fallen pieces after a match. After matching, I check the map for pieces that might be separated from the rest of the grid. This search system checks if every piece in the map is connected to another related to one of the top pieces of the map.
 If it is, it's pushed to an array, in the end, I run the array and compare it to every existent piece, if there are pieces that don't belong to that array it means they are isolated and they should fall just after the matching pieces that fell previously
 
+Finally, to close the developments, I created the downfall of the pieces with incremental difficulty, after X pieces were shot. When X - 2 happens I start a shaking animation of the grid pieces, to give feedback to the user that soon the grid piece will move one level down in the Y axis. When the value of the pieces shot reaches X, I rest the counter and move all grid pieces one level down and generate one new line and attach it to the position 0 of the Y array
+
 ---------------------------------------------------------------
 # Sketches & Evolution
 

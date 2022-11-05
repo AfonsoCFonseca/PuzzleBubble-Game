@@ -22,7 +22,7 @@ export default class GameManager {
     public highScore = getCookie('highscore') || 0;
 
     private totalPiecesShot = 0;
-    private TOTAL_TIMES_TO_MOVE_GRID = 5;
+    private totalTimesToMoveGrid = 10;
 
     constructor(graphics) {
         gameManager = this;
@@ -148,12 +148,14 @@ export default class GameManager {
     public addTotalPiecesShot() {
         this.totalPiecesShot++;
 
-        if(this.totalPiecesShot === this.TOTAL_TIMES_TO_MOVE_GRID - 2) {
+        if(this.totalPiecesShot === this.totalTimesToMoveGrid - 2) {
             grid.downwardPieces(2);
-        } else if(this.totalPiecesShot === this.TOTAL_TIMES_TO_MOVE_GRID - 1) {
+        } else if(this.totalPiecesShot === this.totalTimesToMoveGrid - 1) {
             grid.downwardPieces(1);
-        } else if(this.totalPiecesShot === this.TOTAL_TIMES_TO_MOVE_GRID) {
+        } else if(this.totalPiecesShot === this.totalTimesToMoveGrid) {
             grid.downwardPieces(0);
+            if (this.totalTimesToMoveGrid > 5)
+                this.totalTimesToMoveGrid = this.totalTimesToMoveGrid - 1;
             this.totalPiecesShot = 0
         }
     }

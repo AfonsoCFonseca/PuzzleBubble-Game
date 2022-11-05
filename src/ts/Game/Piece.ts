@@ -62,7 +62,6 @@ export default class Piece extends Phaser.GameObjects.Sprite {
     }
 
     public goToOriginalGridPosition() {
-        if(!this.originalGridPosition) console.log(this)
         this.x = this.originalGridPosition.x
         this.y = this.originalGridPosition.y
     }

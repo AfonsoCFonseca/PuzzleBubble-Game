@@ -26,7 +26,7 @@ export const config = {
         plugin: ShakePositionPlugin,
         start: true
     }],
-    scene: [GameScene, MenuScene]
+    scene: [MenuScene, GameScene]
 };
 
 export const game = new Phaser.Game(config);
