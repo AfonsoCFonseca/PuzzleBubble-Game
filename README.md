@@ -54,5 +54,5 @@ Finally, to close the developments, I created the downfall of the pieces with in
    <img width="195" height="255" src='https://github.com/AfonsoCFonseca/PuzzleBubble-Game/blob/main/screenshots/05_08_22.png' >
    <img width="195" height="255" src='https://github.com/AfonsoCFonseca/PuzzleBubble-Game/blob/main/screenshots/09_08_22.png' >
    <img width="195" height="255" src='https://github.com/AfonsoCFonseca/PuzzleBubble-Game/blob/main/screenshots/20_08_22.png' >
-   <img width="195" height="255" src='https://github.com/AfonsoCFonseca/PuzzleBubble-Game/blob/main/screenshots/05_11_22.png' >
+   <img width="195" height="255" src='https://github.com/AfonsoCFonseca/PuzzleBubble-Game/blob/main/screenshots/5_11_22.png' >
  </p>
